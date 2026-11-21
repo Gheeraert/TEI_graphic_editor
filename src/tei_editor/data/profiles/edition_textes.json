@@ -1,0 +1,258 @@
+{
+  "id": "edition_textes",
+  "label": "Édition de textes",
+  "description": "Profil pour l'édition savante de textes en prose ou en vers : structure, normalisation (choice/orig/reg, sic/corr, abbr/expan), lacunes et restitutions, entités nommées, et un apparat critique de base.",
+  "groups": [
+    {
+      "id": "header_title",
+      "label": "Titre et responsabilités",
+      "elements": [
+        "author",
+        "editor",
+        "funder",
+        "name",
+        "resp",
+        "respStmt",
+        "title",
+        "titleStmt"
+      ]
+    },
+    {
+      "id": "header_edition",
+      "label": "Édition",
+      "elements": [
+        "edition",
+        "editionStmt",
+        "extent"
+      ]
+    },
+    {
+      "id": "header_publication",
+      "label": "Publication",
+      "elements": [
+        "authority",
+        "availability",
+        "date",
+        "idno",
+        "licence",
+        "pubPlace",
+        "publicationStmt",
+        "publisher"
+      ]
+    },
+    {
+      "id": "header_series_notes",
+      "label": "Collection et notes",
+      "elements": [
+        "note",
+        "notesStmt",
+        "seriesStmt"
+      ]
+    },
+    {
+      "id": "header_source",
+      "label": "Source",
+      "elements": [
+        "bibl",
+        "biblStruct",
+        "listWit",
+        "msDesc",
+        "sourceDesc"
+      ]
+    },
+    {
+      "id": "header_encoding",
+      "label": "Déclarations d'encodage",
+      "elements": [
+        "appInfo",
+        "charDecl",
+        "classDecl",
+        "editorialDecl",
+        "encodingDesc",
+        "projectDesc",
+        "refsDecl",
+        "tagsDecl"
+      ]
+    },
+    {
+      "id": "header_profile",
+      "label": "Profil du texte",
+      "elements": [
+        "abstract",
+        "correspDesc",
+        "creation",
+        "keywords",
+        "langUsage",
+        "language",
+        "particDesc",
+        "profileDesc",
+        "textClass"
+      ]
+    },
+    {
+      "id": "header_revision",
+      "label": "Révisions",
+      "elements": [
+        "change",
+        "listChange",
+        "revisionDesc"
+      ]
+    },
+    {
+      "id": "header_root",
+      "label": "Squelette",
+      "elements": [
+        "TEI",
+        "fileDesc",
+        "teiCorpus",
+        "teiHeader"
+      ]
+    },
+    {
+      "id": "structure",
+      "label": "Structure du texte",
+      "elements": [
+        "ab",
+        "anchor",
+        "argument",
+        "back",
+        "body",
+        "byline",
+        "cb",
+        "closer",
+        "dateline",
+        "div",
+        "docAuthor",
+        "docDate",
+        "docImprint",
+        "docTitle",
+        "epigraph",
+        "floatingText",
+        "front",
+        "group",
+        "head",
+        "l",
+        "lb",
+        "lg",
+        "milestone",
+        "opener",
+        "p",
+        "pb",
+        "salute",
+        "seg",
+        "signed",
+        "text",
+        "titlePage",
+        "titlePart"
+      ]
+    },
+    {
+      "id": "phrase",
+      "label": "Niveau phrastique",
+      "elements": [
+        "bibl",
+        "cit",
+        "date",
+        "distinct",
+        "emph",
+        "foreign",
+        "geogName",
+        "gloss",
+        "hi",
+        "idno",
+        "measure",
+        "mentioned",
+        "name",
+        "note",
+        "num",
+        "orgName",
+        "persName",
+        "placeName",
+        "ptr",
+        "q",
+        "quote",
+        "ref",
+        "rs",
+        "said",
+        "soCalled",
+        "term",
+        "time",
+        "title"
+      ]
+    },
+    {
+      "id": "transcription",
+      "label": "Édition de textes et transcription",
+      "elements": [
+        "abbr",
+        "add",
+        "am",
+        "choice",
+        "corr",
+        "damage",
+        "del",
+        "ex",
+        "expan",
+        "gap",
+        "handShift",
+        "orig",
+        "reg",
+        "restore",
+        "sic",
+        "space",
+        "subst",
+        "supplied",
+        "unclear"
+      ]
+    },
+    {
+      "id": "lists",
+      "label": "Listes, tableaux, images",
+      "elements": [
+        "cell",
+        "facsimile",
+        "figDesc",
+        "figure",
+        "graphic",
+        "item",
+        "label",
+        "list",
+        "row",
+        "surface",
+        "table",
+        "zone"
+      ]
+    },
+    {
+      "id": "entities",
+      "label": "Indices et entités",
+      "elements": [
+        "join",
+        "link",
+        "linkGrp",
+        "listBibl",
+        "listOrg",
+        "listPerson",
+        "listPlace",
+        "org",
+        "person",
+        "place"
+      ]
+    },
+    {
+      "id": "apparatus",
+      "label": "Apparat critique",
+      "elements": [
+        "app",
+        "lem",
+        "listApp",
+        "listWit",
+        "rdg",
+        "rdgGrp",
+        "wit",
+        "witDetail",
+        "witness"
+      ]
+    }
+  ]
+}

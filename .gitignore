@@ -8,3 +8,7 @@ build/
 dist/
 .idea/
 .vscode/
+
+# Cache local du téléchargement des sources TEI P5 officielles
+# (tools/build_catalog.py) : volumineux, reproductible, pas versionné.
+.cache/
