@@ -1,0 +1,175 @@
+{
+  "icon_set": "Lucide",
+  "license": "ISC (voir LICENSE ; certaines icônes dérivées du projet Feather portent en plus une notice MIT, listée nommément dans ce même fichier LICENSE)",
+  "source_repository": "https://github.com/lucide-icons/lucide",
+  "retrieved_at": "2026-11-21T20:34:04.807760+00:00",
+  "icons": [
+    {
+      "lucide_name": "book-open",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/book-open.svg"
+    },
+    {
+      "lucide_name": "circle-check-big",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/circle-check-big.svg"
+    },
+    {
+      "lucide_name": "clipboard-paste",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/clipboard-paste.svg"
+    },
+    {
+      "lucide_name": "columns-2",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/columns-2.svg"
+    },
+    {
+      "lucide_name": "copy",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/copy.svg"
+    },
+    {
+      "lucide_name": "download",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/download.svg"
+    },
+    {
+      "lucide_name": "file-plus",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/file-plus.svg"
+    },
+    {
+      "lucide_name": "folder-open",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/folder-open.svg"
+    },
+    {
+      "lucide_name": "hash",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/hash.svg"
+    },
+    {
+      "lucide_name": "info",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/info.svg"
+    },
+    {
+      "lucide_name": "layers",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/layers.svg"
+    },
+    {
+      "lucide_name": "list-tree",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/list-tree.svg"
+    },
+    {
+      "lucide_name": "log-out",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/log-out.svg"
+    },
+    {
+      "lucide_name": "merge",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/merge.svg"
+    },
+    {
+      "lucide_name": "moon",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/moon.svg"
+    },
+    {
+      "lucide_name": "move-right",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/move-right.svg"
+    },
+    {
+      "lucide_name": "palette",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/palette.svg"
+    },
+    {
+      "lucide_name": "pencil",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/pencil.svg"
+    },
+    {
+      "lucide_name": "redo-2",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/redo-2.svg"
+    },
+    {
+      "lucide_name": "save",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/save.svg"
+    },
+    {
+      "lucide_name": "save-all",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/save-all.svg"
+    },
+    {
+      "lucide_name": "scan",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/scan.svg"
+    },
+    {
+      "lucide_name": "scissors",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/scissors.svg"
+    },
+    {
+      "lucide_name": "search",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/search.svg"
+    },
+    {
+      "lucide_name": "settings",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/settings.svg"
+    },
+    {
+      "lucide_name": "shuffle",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shuffle.svg"
+    },
+    {
+      "lucide_name": "sliders-horizontal",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/sliders-horizontal.svg"
+    },
+    {
+      "lucide_name": "split",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/split.svg"
+    },
+    {
+      "lucide_name": "square-code",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/square-code.svg"
+    },
+    {
+      "lucide_name": "sun",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/sun.svg"
+    },
+    {
+      "lucide_name": "triangle-exclamation-point",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/triangle-exclamation-point.svg"
+    },
+    {
+      "lucide_name": "undo-2",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/undo-2.svg"
+    },
+    {
+      "lucide_name": "unlink",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/unlink.svg"
+    },
+    {
+      "lucide_name": "users",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/users.svg"
+    },
+    {
+      "lucide_name": "zoom-in",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/zoom-in.svg"
+    },
+    {
+      "lucide_name": "zoom-out",
+      "source_url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/zoom-out.svg"
+    }
+  ],
+  "substitutions": {
+    "tags.generate_xml_id": {
+      "nom_suggere": "fingerprint",
+      "nom_retenu": "hash",
+      "raison": "« fingerprint » n'existe pas dans le jeu Lucide actuel ; « hash » était la seconde option proposée par la roadmap."
+    },
+    "snippets.mark_shared_verse": {
+      "nom_suggere": "split-square-horizontal",
+      "nom_retenu": "columns-2",
+      "raison": "« split-square-horizontal » n'existe pas dans le jeu Lucide actuel ; « columns-2 » était la seconde option proposée par la roadmap."
+    },
+    "docks.problems": {
+      "nom_suggere": "triangle-alert",
+      "nom_retenu": "triangle-exclamation-point",
+      "raison": "« triangle-alert » (et « alert-triangle ») n'existent plus dans le jeu Lucide actuel ; « triangle-exclamation-point » est le triangle d'avertissement équivalent dans la version courante."
+    },
+    "validate": {
+      "nom_suggere": "check-circle-2",
+      "nom_retenu": "circle-check-big",
+      "raison": "« check-circle-2 »/« check-circle » n'existent plus sous ce nom ; « circle-check-big » est l'équivalent actuel (coche dans un cercle, variante épaisse)."
+    }
+  },
+  "notes": "Chaque action de l'interface (tei_editor.actions) est associée à une icône Lucide via action_icons.json, pas codée en dur dans un widget (CLAUDE.md : données externalisées). Les SVG utilisent stroke=\"currentColor\" : tei_editor.ui.icons substitue cette chaîne par la couleur de premier plan du thème actif, en mémoire, au chargement (voir ADR phase 8)."
+}

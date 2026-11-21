@@ -43,20 +43,13 @@ from tei_editor.header_dialog.wizard import HeaderWizardDialog
 from tei_editor.tei.profiles import list_profiles
 from tei_editor.tei.templates import template_text
 from tei_editor.tei.xml_safety import UnsafeXmlError, parse_xml_safely
+from tei_editor.ui.icons import apply_action_icons
+from tei_editor.ui.theme import foreground_color, stylesheet_for
+from tei_editor.ui.toolbars import Toolbars, build_toolbars
+from tei_editor.ui.tooltips import apply_tooltips_with_shortcuts
 
 APP_TITLE = "TIGRE — Éditeur graphique de TEI"
 STRUCTURAL_UPDATE_DEBOUNCE_MS = 400
-
-_DARK_STYLESHEET = """
-QWidget { background-color: #272822; color: #f8f8f2; }
-QPlainTextEdit { background-color: #1e1f1c; color: #f8f8f2; border: none; }
-QMenuBar { background-color: #272822; color: #f8f8f2; }
-QMenuBar::item:selected { background-color: #49483e; }
-QMenu { background-color: #272822; color: #f8f8f2; }
-QMenu::item:selected { background-color: #49483e; }
-QStatusBar { background-color: #272822; color: #f8f8f2; }
-QDockWidget { color: #f8f8f2; }
-"""
 
 
 class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
@@ -78,6 +71,8 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
         self._profile_labels = dict(self._profile_choices)
         self.actions: Actions = build_actions(self, profile_ids_and_labels=self._profile_choices)
         self.menus: Menus = build_menu_bar(self.menuBar(), self.actions)
+        self.toolbars: Toolbars = build_toolbars(self, self.actions)
+        apply_tooltips_with_shortcuts(self.actions)
 
         self._build_docks()
         self._connect_actions()
@@ -107,6 +102,8 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
     # -- Construction -------------------------------------------------------
     def _build_docks(self) -> None:
         self.outline_dock = QDockWidget("Plan", self)
+        self.outline_dock.setObjectName("dock_plan")
+        self.outline_dock.setAccessibleName("Panneau Plan")
         self.outline_panel = OutlinePanel(self.outline_dock)
         self.outline_dock.setWidget(self.outline_panel)
         self.outline_dock.setVisible(False)
@@ -114,6 +111,8 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
         self.outline_panel.jump_requested.connect(self._goto_outline_line)
 
         self.inspector_dock = QDockWidget("Inspecteur", self)
+        self.inspector_dock.setObjectName("dock_inspecteur")
+        self.inspector_dock.setAccessibleName("Panneau Inspecteur")
         self.inspector_panel = InspectorPanel(self.inspector_dock)
         self.inspector_dock.setWidget(self.inspector_panel)
         self.inspector_dock.setVisible(False)
@@ -123,6 +122,8 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
         self.inspector_panel.generate_xml_id_requested.connect(self._on_generate_xml_id)
 
         self.problems_dock = QDockWidget("Problèmes", self)
+        self.problems_dock.setObjectName("dock_problemes")
+        self.problems_dock.setAccessibleName("Panneau Problèmes")
         self.problems_panel = ProblemsPanel(self.problems_dock)
         self.problems_dock.setWidget(self.problems_panel)
         self.problems_dock.setVisible(False)
@@ -130,6 +131,8 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
         self.problems_panel.jump_requested.connect(self._goto_problem_position)
 
         self.palette_dock = QDockWidget("Palette", self)
+        self.palette_dock.setObjectName("dock_palette")
+        self.palette_dock.setAccessibleName("Panneau Palette")
         self.palette_panel = PalettePanel(self.palette_dock)
         self.palette_dock.setWidget(self.palette_panel)
         self.palette_dock.setVisible(False)
@@ -335,7 +338,8 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
 
     # -- Affichage : zoom/thème --------------------------------------------
     def _apply_theme(self, theme_id: str) -> None:
-        self.setStyleSheet(_DARK_STYLESHEET if theme_id == "sombre" else "")
+        self.setStyleSheet(stylesheet_for(theme_id))
+        apply_action_icons(self.actions, foreground_color(theme_id))
         action = self.actions.themes.by_name.get(theme_id)
         if action is not None:
             action.setChecked(True)
