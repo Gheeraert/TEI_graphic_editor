@@ -87,6 +87,23 @@ def test_tags_menu_has_phase5_commands(qapp: QApplication, tmp_path) -> None:
         "Scinder le paragraphe",
         "Fusionner avec le paragraphe suivant",
         "Générer un xml:id",
+        "Jeux de balises",
+    ]
+    window.close()
+
+
+def test_tags_menu_has_phase7_snippet_commands(qapp: QApplication, tmp_path) -> None:
+    window = _make_window(tmp_path, qapp)
+    tags_menu = window.menuBar().actions()[3].menu()
+    snippets_menu = next(
+        action.menu() for action in tags_menu.actions() if action.text().replace("&", "") == "Jeux de balises"
+    )
+    labels = [action.text().replace("&", "") for action in snippets_menu.actions() if not action.isSeparator()]
+    assert labels == [
+        "Grouper en choix…",
+        "Insérer une leçon (app/lem/rdg)…",
+        "Insérer une liste de personnages…",
+        "Marquer un vers partagé",
     ]
     window.close()
 

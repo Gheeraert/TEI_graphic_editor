@@ -47,6 +47,18 @@ class TagActions:
 
 
 @dataclass
+class SnippetActions:
+    """Commandes composites de la phase 7 (jeux de balises) :
+    « Grouper en choix… », « Insérer une liste de personnages… »,
+    « Marquer un vers partagé », « Insérer une leçon (app/lem/rdg)… »."""
+
+    group_as_choice: QAction
+    insert_cast_list: QAction
+    mark_shared_verse: QAction
+    insert_apparatus: QAction
+
+
+@dataclass
 class ThemeActions:
     group: QActionGroup
     by_name: dict[str, QAction] = field(default_factory=dict)
@@ -93,6 +105,7 @@ class Actions:
     # Insertion / Balises (phase 5 ; jeux de balises par profil : phase 7)
     insertion_unavailable: QAction
     tags: TagActions
+    snippets: SnippetActions
     # Affichage
     docks: ViewDockActions
     zoom_in: QAction
@@ -143,6 +156,13 @@ def build_actions(parent: QWidget, *, profile_ids_and_labels: list[tuple[str, st
         split_paragraph=_action(parent, "&Scinder le paragraphe"),
         merge_paragraph=_action(parent, "&Fusionner avec le paragraphe suivant"),
         generate_xml_id=_action(parent, "&Générer un xml:id"),
+    )
+
+    snippets = SnippetActions(
+        group_as_choice=_action(parent, "&Grouper en choix…"),
+        insert_cast_list=_action(parent, "Insérer une &liste de personnages…"),
+        mark_shared_verse=_action(parent, "Marquer un &vers partagé"),
+        insert_apparatus=_action(parent, "Insérer une &leçon (app/lem/rdg)…"),
     )
 
     outline = _action(parent, "&Plan", checkable=True)
@@ -196,6 +216,7 @@ def build_actions(parent: QWidget, *, profile_ids_and_labels: list[tuple[str, st
         goto_line=goto_line,
         insertion_unavailable=insertion_unavailable,
         tags=tags,
+        snippets=snippets,
         docks=docks,
         zoom_in=zoom_in,
         zoom_out=zoom_out,

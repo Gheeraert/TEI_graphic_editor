@@ -1,0 +1,22 @@
+{
+  "pairs": [
+    {
+      "id": "orig_reg",
+      "label": "orig / reg (graphie d'origine / régularisée)",
+      "first": "orig",
+      "second": "reg"
+    },
+    {
+      "id": "sic_corr",
+      "label": "sic / corr (texte tel quel / corrigé)",
+      "first": "sic",
+      "second": "corr"
+    },
+    {
+      "id": "abbr_expan",
+      "label": "abbr / expan (abréviation / forme développée)",
+      "first": "abbr",
+      "second": "expan"
+    }
+  ]
+}

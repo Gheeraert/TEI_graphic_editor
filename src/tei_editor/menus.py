@@ -60,6 +60,13 @@ def build_menu_bar(menu_bar: QMenuBar, actions: Actions) -> Menus:
     tags_menu.addAction(actions.tags.merge_paragraph)
     tags_menu.addSeparator()
     tags_menu.addAction(actions.tags.generate_xml_id)
+    tags_menu.addSeparator()
+    snippets_menu = tags_menu.addMenu("&Jeux de balises")
+    snippets_menu.addAction(actions.snippets.group_as_choice)
+    snippets_menu.addAction(actions.snippets.insert_apparatus)
+    snippets_menu.addSeparator()
+    snippets_menu.addAction(actions.snippets.insert_cast_list)
+    snippets_menu.addAction(actions.snippets.mark_shared_verse)
 
     view_menu = menu_bar.addMenu("&Affichage")
     view_menu.addAction(actions.docks.outline)

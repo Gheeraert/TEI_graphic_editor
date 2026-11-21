@@ -31,6 +31,7 @@ from tei_editor.editor.outline_panel import OutlinePanel
 from tei_editor.editor.palette_panel import PalettePanel
 from tei_editor.editor.problems_panel import ProblemsPanel
 from tei_editor.editor.status_bar import EditorStatusBar
+from tei_editor.editor.snippet_commands_mixin import SnippetCommandsMixin
 from tei_editor.editor.tag_commands_mixin import TagCommandsMixin
 from tei_editor.editor.text_editor import XmlTextEditor
 from tei_editor.editor.xpath import current_xpath
@@ -58,7 +59,7 @@ QDockWidget { color: #f8f8f2; }
 """
 
 
-class MainWindow(TagCommandsMixin, QMainWindow):
+class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
     def __init__(self, settings=None, recovery_dir: Path | None = None) -> None:
         super().__init__()
         self.setWindowTitle(APP_TITLE)
@@ -181,6 +182,10 @@ class MainWindow(TagCommandsMixin, QMainWindow):
         actions.tags.split_paragraph.triggered.connect(self._split_paragraph)
         actions.tags.merge_paragraph.triggered.connect(self._merge_paragraph)
         actions.tags.generate_xml_id.triggered.connect(self._on_generate_xml_id)
+        actions.snippets.group_as_choice.triggered.connect(self._group_as_choice)
+        actions.snippets.insert_cast_list.triggered.connect(self._insert_cast_list)
+        actions.snippets.mark_shared_verse.triggered.connect(self._mark_shared_verse)
+        actions.snippets.insert_apparatus.triggered.connect(self._insert_apparatus)
 
         actions.zoom_in.triggered.connect(self.editor.zoom_editor_in)
         actions.zoom_out.triggered.connect(self.editor.zoom_editor_out)
