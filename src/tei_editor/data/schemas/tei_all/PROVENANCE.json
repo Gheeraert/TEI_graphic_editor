@@ -1,0 +1,8 @@
+{
+  "schema": "tei_all.rng (RelaxNG, grammaire TEI complète)",
+  "tei_version": "P5 4.12.0",
+  "source_url": "https://www.tei-c.org/Vault/P5/4.12.0/xml/tei/custom/schema/relaxng/tei_all.rng",
+  "retrieved_at": "2026-11-21T18:11:07.129296+00:00",
+  "sha256": "b0f115095ead2ccc6933aa3365c6f4a82cba3b2ec7eee7f76bb616d7a63b7e48",
+  "notes": "Schéma précompilé officiel du consortium TEI pour la version P5 4.12.0, epinglée en phase 1 (voir docs/DECISIONS.md ADR-0003) et confirmée fonctionnelle (compilation lxml.etree.RelaxNG réussie, validation vérifiée sur tests/fixtures/tei-samples/). Remplace le tei_all.rng de 2009 présent dans le dépôt GitHub TEIC/TEI, signalé obsolète par tests/fixtures/tei-samples/README.md. Un seul schéma fait autorité pour tous les profils (docs/DECISIONS.md, nouvel ADR de la phase 4) : le profil actif ne restreint jamais la grammaire RelaxNG, seulement la liste blanche de la future palette de balises."
+}

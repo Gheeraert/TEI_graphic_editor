@@ -22,6 +22,35 @@ class UnsafeXmlError(ValueError):
     """
 
 
+class UnsafeXmlSyntaxError(UnsafeXmlError):
+    """Variante de :class:`UnsafeXmlError` pour un document mal formé qui
+    préserve la position précise de l'erreur (phase 4, `docs/ROADMAP.md`
+    §5 : « erreurs localisées à la ligne et à la colonne près »).
+
+    ``line``/``column`` reprennent ``lxml.etree.XMLSyntaxError.lineno``/
+    ``.offset`` (1-indexés, comme le reste de l'éditeur). Toujours
+    attrapable comme un simple :class:`UnsafeXmlError` par le code
+    existant qui ne s'intéresse pas à la position.
+    """
+
+    def __init__(self, message: str, *, line: int, column: int) -> None:
+        super().__init__(message)
+        self.line = line
+        self.column = column
+
+
+def safe_xml_parser() -> etree.XMLParser:
+    """Construit l'analyseur XML durci (voir :func:`parse_xml_safely`).
+
+    Public (plutôt que l'ancien ``_safe_xml_parser`` privé) pour que
+    :mod:`tei_editor.editor.diagnostics` puisse analyser le même texte
+    avec la même politique durcie sans dupliquer sa configuration, tout
+    en gérant lui-même la capture d'erreurs (il a besoin de la ligne/colonne
+    de l'exception, que :func:`parse_xml_safely` absorbe dans un message).
+    """
+    return _safe_xml_parser()
+
+
 def _safe_xml_parser() -> etree.XMLParser:
     # Un analyseur neuf par appel, pas une instance partagée au niveau
     # module : un XMLParser porte un état d'erreur mutable par document,
@@ -54,7 +83,11 @@ def parse_xml_safely(xml: str | bytes) -> etree._Element:
     try:
         root = etree.fromstring(data, parser=_safe_xml_parser())
     except etree.XMLSyntaxError as exc:
-        raise UnsafeXmlError(f"XML TEI invalide (parse) : {exc}") from exc
+        raise UnsafeXmlSyntaxError(
+            f"XML TEI invalide (parse) : {exc}",
+            line=exc.lineno or 1,
+            column=exc.offset or 1,
+        ) from exc
     # load_dtd=False empêche seulement la *récupération* d'un sous-ensemble
     # externe ; une déclaration DOCTYPE elle-même (sous-ensemble interne,
     # déclarations d'entités, ou simple `<!DOCTYPE TEI>`) reste enregistrée

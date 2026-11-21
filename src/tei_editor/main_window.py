@@ -23,6 +23,11 @@ from PySide6.QtWidgets import (
 
 from tei_editor import recovery
 from tei_editor.actions import Actions, build_actions
+from tei_editor.editor.diagnostics import SEVERITY_ERROR, SEVERITY_WARNING, compute_diagnostics
+from tei_editor.editor.diagnostics_overlay import apply_diagnostic_highlights
+from tei_editor.editor.outline import build_outline
+from tei_editor.editor.outline_panel import OutlinePanel
+from tei_editor.editor.problems_panel import ProblemsPanel
 from tei_editor.editor.status_bar import EditorStatusBar
 from tei_editor.editor.text_editor import XmlTextEditor
 from tei_editor.editor.xpath import current_xpath
@@ -95,9 +100,21 @@ class MainWindow(QMainWindow):
 
     # -- Construction -------------------------------------------------------
     def _build_docks(self) -> None:
-        self.outline_dock = self._make_placeholder_dock("Plan", "Disponible en phase 4.")
+        self.outline_dock = QDockWidget("Plan", self)
+        self.outline_panel = OutlinePanel(self.outline_dock)
+        self.outline_dock.setWidget(self.outline_panel)
+        self.outline_dock.setVisible(False)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.outline_dock)
+        self.outline_panel.jump_requested.connect(self._goto_outline_line)
+
         self.inspector_dock = self._make_placeholder_dock("Inspecteur", "Disponible en phase 5.")
-        self.problems_dock = self._make_placeholder_dock("Problèmes", "Disponible en phase 4.")
+
+        self.problems_dock = QDockWidget("Problèmes", self)
+        self.problems_panel = ProblemsPanel(self.problems_dock)
+        self.problems_dock.setWidget(self.problems_panel)
+        self.problems_dock.setVisible(False)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.problems_dock)
+        self.problems_panel.jump_requested.connect(self._goto_problem_position)
 
         self.actions.docks.outline.toggled.connect(self.outline_dock.setVisible)
         self.actions.docks.inspector.toggled.connect(self.inspector_dock.setVisible)
@@ -273,10 +290,20 @@ class MainWindow(QMainWindow):
         )
         if not ok:
             return
-        block = self.editor.document().findBlockByNumber(line - 1)
+        self._goto_line_column(line, 1)
+
+    def _goto_line_column(self, line: int, column: int) -> None:
+        block = self.editor.document().findBlockByNumber(max(0, line - 1))
         cursor = QTextCursor(block)
+        cursor.setPosition(block.position() + max(0, column - 1))
         self.editor.setTextCursor(cursor)
         self.editor.setFocus()
+
+    def _goto_outline_line(self, line: int) -> None:
+        self._goto_line_column(line, 1)
+
+    def _goto_problem_position(self, line: int, column: int) -> None:
+        self._goto_line_column(line, column)
 
     # -- Affichage : zoom/thème --------------------------------------------
     def _apply_theme(self, theme_id: str) -> None:
@@ -291,24 +318,30 @@ class MainWindow(QMainWindow):
 
     # -- Outils : valider/profil/préférences --------------------------------
     def _validate_document(self) -> None:
-        text = self.editor.toPlainText()
-        try:
-            parse_xml_safely(text)
-        except UnsafeXmlError as exc:
-            self.status_bar.set_validity(well_formed=False, message="Document mal formé")
-            QMessageBox.warning(
+        self._update_structural_info()
+        diagnostics = self._last_diagnostics
+        errors = [d for d in diagnostics if d.severity == SEVERITY_ERROR]
+        warnings = [d for d in diagnostics if d.severity == SEVERITY_WARNING]
+        if not diagnostics:
+            profile_label = self._profile_labels.get(
+                prefs.get_active_profile(self.settings), ""
+            )
+            QMessageBox.information(
                 self,
                 "Validation",
-                f"Document mal formé :\n{exc}\n\n"
-                "La validation complète du schéma (RelaxNG) arrivera en phase 4.",
+                f"Document valide (profil : {profile_label}).",
             )
             return
-        self.status_bar.set_validity(well_formed=True, message="Document bien formé")
-        QMessageBox.information(
-            self,
-            "Validation",
-            "Document bien formé. La validation complète du schéma (RelaxNG) arrivera en phase 4.",
-        )
+        parts = []
+        if errors:
+            parts.append(f"{len(errors)} erreur(s)")
+        if warnings:
+            parts.append(f"{len(warnings)} avertissement(s) hors profil")
+        summary = ", ".join(parts)
+        if errors:
+            QMessageBox.warning(self, "Validation", f"{summary}. Voir le panneau Problèmes.")
+        else:
+            QMessageBox.information(self, "Validation", f"{summary}. Voir le panneau Problèmes.")
 
     def _apply_active_profile(self, profile_id: str) -> None:
         action = self.actions.profiles.by_id.get(profile_id)
@@ -350,18 +383,37 @@ class MainWindow(QMainWindow):
 
     def _update_structural_info(self) -> None:
         text = self.editor.toPlainText()
+        active_profile = prefs.get_active_profile(self.settings)
+        diagnostics = compute_diagnostics(text, active_profile)
+        self._last_diagnostics = diagnostics
+
         try:
-            parse_xml_safely(text)
+            root = parse_xml_safely(text)
             well_formed = True
         except UnsafeXmlError:
+            root = None
             well_formed = False
-        self.status_bar.set_validity(
-            well_formed=well_formed,
-            message="Document bien formé" if well_formed else "Document mal formé",
-        )
+
+        has_errors = any(d.severity == SEVERITY_ERROR for d in diagnostics)
+        if not well_formed:
+            message = "Document mal formé"
+        elif has_errors:
+            message = "Document invalide (schéma TEI)"
+        else:
+            message = "Document valide"
+        self.status_bar.set_validity(well_formed=not has_errors, message=message)
+
         offset = self.editor.textCursor().position()
         xpath_value = current_xpath(text, offset) if well_formed else None
         self.status_bar.set_xpath(xpath_value)
+
+        self.problems_panel.set_diagnostics(diagnostics)
+        apply_diagnostic_highlights(self.editor, diagnostics)
+
+        outline_root = build_outline(root) if root is not None else None
+        self.outline_panel.set_outline(outline_root)
+        if outline_root is not None:
+            self.outline_panel.select_line(self.editor.textCursor().blockNumber() + 1)
 
     # -- Autosave / récupération ----------------------------------------------
     def _configure_autosave(self) -> None:

@@ -56,3 +56,37 @@ def test_xpath_ignores_comments_and_processing_instructions() -> None:
     doc = '<?xml version="1.0"?>\n<!-- commentaire --><TEI><p>texte</p></TEI>'
     offset = doc.index("texte")
     assert current_xpath(doc, offset) == "/TEI[1]/p[1]"
+
+
+# -- Phase 4 : vérifications supplémentaires à la main (calcul par positions lxml) --
+
+NESTED_DOC = (
+    "<TEI>\n"
+    "  <text>\n"
+    "    <body>\n"
+    '      <div n="1">\n'
+    "        <p>Premier paragraphe du premier div.</p>\n"
+    "      </div>\n"
+    '      <div n="2">\n'
+    "        <p>Un paragraphe <hi>avec emphase</hi> dans le deuxième div.</p>\n"
+    "        <p>Second paragraphe du deuxième div.</p>\n"
+    "      </div>\n"
+    "    </body>\n"
+    "  </text>\n"
+    "</TEI>\n"
+)
+
+
+def test_xpath_p_imbrique_dans_le_premier_div() -> None:
+    offset = NESTED_DOC.index("Premier paragraphe")
+    assert current_xpath(NESTED_DOC, offset) == "/TEI[1]/text[1]/body[1]/div[1]/p[1]"
+
+
+def test_xpath_p_imbrique_dans_le_deuxieme_div() -> None:
+    offset = NESTED_DOC.index("Second paragraphe")
+    assert current_xpath(NESTED_DOC, offset) == "/TEI[1]/text[1]/body[1]/div[2]/p[2]"
+
+
+def test_xpath_descend_jusquau_hi_imbrique() -> None:
+    offset = NESTED_DOC.index("avec emphase")
+    assert current_xpath(NESTED_DOC, offset) == "/TEI[1]/text[1]/body[1]/div[2]/p[1]/hi[1]"
