@@ -19,9 +19,9 @@
           <msIdentifier><repository>Archives fictives</repository><idno>Ms 0002, f. 3v</idno></msIdentifier>
           <physDesc>
             <handDesc>
-              <handNote xml:id="m1" scribe="Le poète" medium="encre noire">Premier jet.</handNote>
-              <handNote xml:id="m2" scribe="Le poète" medium="encre rouge">Relecture.</handNote>
-              <handNote xml:id="m3" scribe="Un ami" medium="crayon">Suggestions d'une autre main.</handNote>
+              <handNote xml:id="m1" scribe="LePoete" medium="encre noire">Premier jet.</handNote>
+              <handNote xml:id="m2" scribe="LePoete" medium="encre rouge">Relecture.</handNote>
+              <handNote xml:id="m3" scribe="UnAmi" medium="crayon">Suggestions d'une autre main.</handNote>
             </handDesc>
           </physDesc>
         </msDesc>

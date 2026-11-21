@@ -17,7 +17,7 @@
     <body>
       <div>
         <p><persName ref="#p-marie">Marie</persName> quitta <placeName ref="#l-rouen">Rouen</placeName>
-           le <date when="1672-04-15">15 avril 1672</date>, vers <date notBefore="1672-04-15T08:00" notAfter="1672-04-15T10:00">huit ou neuf heures</date>,
+           le <date when="1672-04-15">15 avril 1672</date>, vers <date notBefore="1672-04-15T08:00:00" notAfter="1672-04-15T10:00:00">huit ou neuf heures</date>,
            pour rejoindre <orgName ref="#o-abbaye">l'abbaye</orgName> dans le courant de
            <date from="1672-04" to="1672-05">l'été</date>. Elle emportait <measure unit="livre" quantity="3">trois livres</measure>
            et <num value="12">douze</num> écus.</p>
