@@ -16,19 +16,22 @@ from PySide6.QtWidgets import (
     QDockWidget,
     QFileDialog,
     QInputDialog,
-    QLabel,
     QMainWindow,
     QMessageBox,
 )
 
 from tei_editor import recovery
 from tei_editor.actions import Actions, build_actions
+from tei_editor.editor.current_element import all_xml_ids, local_name, locate_current_element
 from tei_editor.editor.diagnostics import SEVERITY_ERROR, SEVERITY_WARNING, compute_diagnostics
 from tei_editor.editor.diagnostics_overlay import apply_diagnostic_highlights
+from tei_editor.editor.inspector_panel import InspectorPanel
 from tei_editor.editor.outline import build_outline
 from tei_editor.editor.outline_panel import OutlinePanel
+from tei_editor.editor.palette_panel import PalettePanel
 from tei_editor.editor.problems_panel import ProblemsPanel
 from tei_editor.editor.status_bar import EditorStatusBar
+from tei_editor.editor.tag_commands_mixin import TagCommandsMixin
 from tei_editor.editor.text_editor import XmlTextEditor
 from tei_editor.editor.xpath import current_xpath
 from tei_editor.find_replace_dialog import FindReplaceDialog
@@ -53,7 +56,7 @@ QDockWidget { color: #f8f8f2; }
 """
 
 
-class MainWindow(QMainWindow):
+class MainWindow(TagCommandsMixin, QMainWindow):
     def __init__(self, settings=None, recovery_dir: Path | None = None) -> None:
         super().__init__()
         self.setWindowTitle(APP_TITLE)
@@ -107,7 +110,14 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.outline_dock)
         self.outline_panel.jump_requested.connect(self._goto_outline_line)
 
-        self.inspector_dock = self._make_placeholder_dock("Inspecteur", "Disponible en phase 5.")
+        self.inspector_dock = QDockWidget("Inspecteur", self)
+        self.inspector_panel = InspectorPanel(self.inspector_dock)
+        self.inspector_dock.setWidget(self.inspector_panel)
+        self.inspector_dock.setVisible(False)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.inspector_dock)
+        self.inspector_panel.attribute_committed.connect(self._on_attribute_committed)
+        self.inspector_panel.attribute_removed.connect(self._on_attribute_removed)
+        self.inspector_panel.generate_xml_id_requested.connect(self._on_generate_xml_id)
 
         self.problems_dock = QDockWidget("Problèmes", self)
         self.problems_panel = ProblemsPanel(self.problems_dock)
@@ -116,21 +126,21 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.problems_dock)
         self.problems_panel.jump_requested.connect(self._goto_problem_position)
 
+        self.palette_dock = QDockWidget("Palette", self)
+        self.palette_panel = PalettePanel(self.palette_dock)
+        self.palette_dock.setWidget(self.palette_panel)
+        self.palette_dock.setVisible(False)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.palette_dock)
+        self.palette_panel.element_chosen.connect(self._on_palette_element_chosen)
+
         self.actions.docks.outline.toggled.connect(self.outline_dock.setVisible)
         self.actions.docks.inspector.toggled.connect(self.inspector_dock.setVisible)
         self.actions.docks.problems.toggled.connect(self.problems_dock.setVisible)
+        self.actions.docks.palette.toggled.connect(self.palette_dock.setVisible)
         self.outline_dock.visibilityChanged.connect(self.actions.docks.outline.setChecked)
         self.inspector_dock.visibilityChanged.connect(self.actions.docks.inspector.setChecked)
         self.problems_dock.visibilityChanged.connect(self.actions.docks.problems.setChecked)
-
-    def _make_placeholder_dock(self, title: str, message: str) -> QDockWidget:
-        dock = QDockWidget(title, self)
-        label = QLabel(message)
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        dock.setWidget(label)
-        dock.setVisible(False)
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, dock)
-        return dock
+        self.palette_dock.visibilityChanged.connect(self.actions.docks.palette.setChecked)
 
     def _connect_actions(self) -> None:
         actions = self.actions
@@ -159,6 +169,15 @@ class MainWindow(QMainWindow):
         document.redoAvailable.connect(actions.redo.setEnabled)
         self.editor.copyAvailable.connect(actions.copy.setEnabled)
         self.editor.copyAvailable.connect(actions.cut.setEnabled)
+
+        actions.tags.wrap_selection.setEnabled(False)
+        self.editor.copyAvailable.connect(actions.tags.wrap_selection.setEnabled)
+        actions.tags.wrap_selection.triggered.connect(self._wrap_selection)
+        actions.tags.unwrap.triggered.connect(self._unwrap_current_element)
+        actions.tags.rename.triggered.connect(self._rename_current_element)
+        actions.tags.split_paragraph.triggered.connect(self._split_paragraph)
+        actions.tags.merge_paragraph.triggered.connect(self._merge_paragraph)
+        actions.tags.generate_xml_id.triggered.connect(self._on_generate_xml_id)
 
         actions.zoom_in.triggered.connect(self.editor.zoom_editor_in)
         actions.zoom_out.triggered.connect(self.editor.zoom_editor_out)
@@ -414,6 +433,13 @@ class MainWindow(QMainWindow):
         self.outline_panel.set_outline(outline_root)
         if outline_root is not None:
             self.outline_panel.select_line(self.editor.textCursor().blockNumber() + 1)
+
+        located = locate_current_element(text, offset) if well_formed else None
+        current_name = local_name(located.element.tag) if located is not None else None
+        self.palette_panel.set_context(current_name, active_profile)
+        document_xml_ids = sorted(all_xml_ids(root)) if root is not None else []
+        self.inspector_panel.set_element(located, text, document_xml_ids)
+        self._update_tag_actions_enabled(located)
 
     # -- Autosave / récupération ----------------------------------------------
     def _configure_autosave(self) -> None:

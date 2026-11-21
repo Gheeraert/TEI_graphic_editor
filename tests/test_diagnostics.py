@@ -12,6 +12,7 @@ from tei_editor.editor.diagnostics import (
     SEVERITY_WARNING,
     compute_diagnostics,
     parse_with_diagnostics,
+    reference_diagnostics,
     reformulate_relaxng_message,
     validate_relaxng,
 )
@@ -98,6 +99,34 @@ def test_compute_diagnostics_profil_tei_all_ne_produit_aucun_avertissement() -> 
     text = (FIXTURES_DIR / "05-theatre" / "01-scene-vers.xml").read_text(encoding="utf-8")
     diagnostics = compute_diagnostics(text, "tei_all")
     assert all(d.severity != SEVERITY_WARNING for d in diagnostics)
+
+
+def test_reference_cassee_produit_un_diagnostic_pour_chaque_reference_non_resolue() -> None:
+    # tests/fixtures/tei-samples/99-invalides/03-reference-cassee.xml,
+    # manifest.json -> expect: ["unresolved-ref"] (#absent, #T9) ;
+    # vérifie que docs/ROADMAP.md §3.A3.5 est maintenant un diagnostic
+    # applicatif réel (pas seulement détecté par le test ad hoc de
+    # tests/test_tei_samples_corpus.py).
+    text = (FIXTURES_DIR / "99-invalides" / "03-reference-cassee.xml").read_text(encoding="utf-8")
+    root = parse_xml_safely(text)
+    diagnostics = reference_diagnostics(root)
+    assert len(diagnostics) == 2
+    assert all(d.severity == SEVERITY_ERROR for d in diagnostics)
+    messages = " ".join(d.message for d in diagnostics)
+    assert "#absent" in messages
+    assert "#T9" in messages
+    # Doit aussi apparaître dans compute_diagnostics (panneau Problèmes).
+    assert any("#absent" in d.message for d in compute_diagnostics(text, "tei_all"))
+
+
+def test_reference_resolue_ne_produit_aucun_diagnostic() -> None:
+    text = (
+        '<TEI xmlns="http://www.tei-c.org/ns/1.0">'
+        '<text><body><p xml:id="p1"/><ref target="#p1"/></body></text>'
+        "</TEI>"
+    )
+    root = parse_xml_safely(text)
+    assert reference_diagnostics(root) == []
 
 
 def test_manifest_99_invalides_01_02_03_restent_detectes_par_bonne_formation_ou_xmlid() -> None:

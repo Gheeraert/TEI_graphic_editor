@@ -3,9 +3,10 @@ centralisées dans un module dédié, pas éparpillées dans ``MainWindow`` »).
 
 Ce module ne fait que construire les actions (texte, raccourci,
 « cochable », groupes exclusifs) ; leur branchement (``triggered.connect``)
-est fait par ``main_window.py``. Les menus « Insertion » et « Balises »
-n'ont volontairement qu'une action désactivée : ce sont les menus de la
-palette de balises, qui n'existe pas avant les phases 5/7.
+est fait par ``main_window.py``. Phase 5 : les menus « Insertion » et
+« Balises » reçoivent leurs commandes réelles (envelopper, dégrouper,
+renommer, scinder/fusionner, générer un xml:id) ; les jeux de balises
+par profil restent pour la phase 7.
 """
 
 from __future__ import annotations
@@ -31,6 +32,17 @@ class ViewDockActions:
     outline: QAction
     inspector: QAction
     problems: QAction
+    palette: QAction
+
+
+@dataclass
+class TagActions:
+    wrap_selection: QAction
+    unwrap: QAction
+    rename: QAction
+    split_paragraph: QAction
+    merge_paragraph: QAction
+    generate_xml_id: QAction
 
 
 @dataclass
@@ -63,9 +75,9 @@ class Actions:
     paste: QAction
     find_replace: QAction
     goto_line: QAction
-    # Insertion / Balises (coquilles, phases 5/7)
+    # Insertion / Balises (phase 5 ; jeux de balises par profil : phase 7)
     insertion_unavailable: QAction
-    tags_unavailable: QAction
+    tags: TagActions
     # Affichage
     docks: ViewDockActions
     zoom_in: QAction
@@ -96,15 +108,23 @@ def build_actions(parent: QWidget, *, profile_ids_and_labels: list[tuple[str, st
     find_replace = _action(parent, "&Rechercher/remplacer...", shortcut="Ctrl+F")
     goto_line = _action(parent, "Aller à la li&gne...", shortcut="Ctrl+G")
 
-    insertion_unavailable = _action(parent, "Palette de balises (disponible en phase 5)")
+    insertion_unavailable = _action(parent, "Palette de balises : voir le dock « Palette » (Affichage)")
     insertion_unavailable.setEnabled(False)
-    tags_unavailable = _action(parent, "Jeux de balises (disponible en phase 7)")
-    tags_unavailable.setEnabled(False)
+
+    tags = TagActions(
+        wrap_selection=_action(parent, "&Envelopper la sélection...", shortcut="Ctrl+E"),
+        unwrap=_action(parent, "&Dégrouper la balise"),
+        rename=_action(parent, "&Renommer la balise..."),
+        split_paragraph=_action(parent, "&Scinder le paragraphe"),
+        merge_paragraph=_action(parent, "&Fusionner avec le paragraphe suivant"),
+        generate_xml_id=_action(parent, "&Générer un xml:id"),
+    )
 
     outline = _action(parent, "&Plan", checkable=True)
     inspector = _action(parent, "&Inspecteur", checkable=True)
     problems = _action(parent, "Pro&blèmes", checkable=True)
-    docks = ViewDockActions(outline=outline, inspector=inspector, problems=problems)
+    palette = _action(parent, "&Palette", checkable=True)
+    docks = ViewDockActions(outline=outline, inspector=inspector, problems=problems, palette=palette)
 
     zoom_in = _action(parent, "Zoom &avant", shortcut="Ctrl++")
     zoom_out = _action(parent, "Zoom a&rrière", shortcut="Ctrl+-")
@@ -148,7 +168,7 @@ def build_actions(parent: QWidget, *, profile_ids_and_labels: list[tuple[str, st
         find_replace=find_replace,
         goto_line=goto_line,
         insertion_unavailable=insertion_unavailable,
-        tags_unavailable=tags_unavailable,
+        tags=tags,
         docks=docks,
         zoom_in=zoom_in,
         zoom_out=zoom_out,

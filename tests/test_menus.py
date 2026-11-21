@@ -65,14 +65,28 @@ def test_edit_menu_has_expected_actions(qapp: QApplication, tmp_path) -> None:
     window.close()
 
 
-def test_insertion_and_tags_menus_are_placeholders(qapp: QApplication, tmp_path) -> None:
+def test_insertion_menu_points_to_palette_dock(qapp: QApplication, tmp_path) -> None:
+    # Phase 5 : la palette de balises est un dock dédié (Affichage >
+    # Palette), pas un menu "Insertion" rempli d'actions individuelles.
     window = _make_window(tmp_path, qapp)
     insertion_menu = window.menuBar().actions()[2].menu()
-    tags_menu = window.menuBar().actions()[3].menu()
     assert len(insertion_menu.actions()) == 1
     assert not insertion_menu.actions()[0].isEnabled()
-    assert len(tags_menu.actions()) == 1
-    assert not tags_menu.actions()[0].isEnabled()
+    window.close()
+
+
+def test_tags_menu_has_phase5_commands(qapp: QApplication, tmp_path) -> None:
+    window = _make_window(tmp_path, qapp)
+    tags_menu = window.menuBar().actions()[3].menu()
+    labels = [action.text().replace("&", "") for action in tags_menu.actions() if not action.isSeparator()]
+    assert labels == [
+        "Envelopper la sélection...",
+        "Dégrouper la balise",
+        "Renommer la balise...",
+        "Scinder le paragraphe",
+        "Fusionner avec le paragraphe suivant",
+        "Générer un xml:id",
+    ]
     window.close()
 
 
@@ -85,6 +99,7 @@ def test_view_menu_has_docks_zoom_and_theme(qapp: QApplication, tmp_path) -> Non
     assert "Plan" in direct_actions
     assert "Inspecteur" in direct_actions
     assert "Problèmes" in direct_actions
+    assert "Palette" in direct_actions
     submenu_titles = [action.text().replace("&", "") for action in view_menu.actions() if action.menu()]
     assert "Zoom" in submenu_titles
     assert "Thème" in submenu_titles

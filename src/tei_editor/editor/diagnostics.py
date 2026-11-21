@@ -11,15 +11,18 @@ le timer de re-parsing différé existant (``_update_structural_info``).
 
 from __future__ import annotations
 
-import json
 import re
 import threading
 from dataclasses import dataclass
-from functools import lru_cache
 from pathlib import Path
 
 from lxml import etree
 
+from tei_editor.tei.catalog import (
+    attribute_gloss as _attribute_gloss,
+    element_gloss as _element_gloss,
+    profile_whitelist as _profile_whitelist,
+)
 from tei_editor.tei.xml_safety import UnsafeXmlError, UnsafeXmlSyntaxError, safe_xml_parser
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -30,6 +33,14 @@ SEVERITY_ERROR = "erreur"
 SEVERITY_WARNING = "avertissement"
 
 _TEI_NS = "http://www.tei-c.org/ns/1.0"
+
+#: Attributs porteurs de référence interne (``#id``) contrôlés par
+#: :func:`reference_diagnostics` (`docs/ROADMAP.md` §3.A3.5) — même
+#: motif que celui déjà utilisé par
+#: ``tests/test_tei_samples_corpus.py::test_unresolved_reference_sample_actually_dangles``,
+#: complété par ``resp``/``who``/``facs`` cités par la même règle.
+_REFERENCE_ATTRIBUTES = ("ref", "target", "wit", "corresp", "resp", "who", "facs")
+_XML_ID_ATTR = "{http://www.w3.org/XML/1998/namespace}id"
 
 
 @dataclass(frozen=True)
@@ -110,33 +121,6 @@ def _local_name(tag: str) -> str:
     if isinstance(tag, str) and "}" in tag:
         return tag.rsplit("}", 1)[1]
     return tag if isinstance(tag, str) else ""
-
-
-# -- Catalogue (gloses françaises) --------------------------------------------
-
-
-@lru_cache(maxsize=1)
-def _load_catalog() -> dict:
-    try:
-        return json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
-    except OSError:
-        return {"elements": {}}
-
-
-def _element_gloss(ident: str) -> str:
-    elements = _load_catalog().get("elements", {})
-    entry = elements.get(ident)
-    gloss = entry.get("gloss") if entry else None
-    return f"{gloss} ({ident})" if gloss else ident
-
-
-def _attribute_gloss(ident: str) -> str:
-    elements = _load_catalog().get("elements", {})
-    for entry in elements.values():
-        for attr in entry.get("attributes", []):
-            if attr.get("ident") == ident and attr.get("gloss"):
-                return f"{attr['gloss']} (@{ident})"
-    return f"@{ident}"
 
 
 # -- Reformulation française des messages RelaxNG (libxml2) ------------------
@@ -257,19 +241,6 @@ def validate_relaxng(root: etree._Element) -> list[Diagnostic]:
 # -- Avertissements « hors profil » (liste blanche, non bloquant) -----------
 
 
-@lru_cache(maxsize=8)
-def _profile_whitelist(profile_id: str) -> frozenset[str] | None:
-    path = DATA_DIR / "profiles" / f"{profile_id}.json"
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except OSError:
-        return None
-    elements: set[str] = set()
-    for group in data.get("groups", []):
-        elements.update(group.get("elements", []))
-    return frozenset(elements)
-
-
 def profile_warnings(root: etree._Element, profile_id: str) -> list[Diagnostic]:
     """Avertissements « hors profil » (non bloquants, sévérité distincte
     des erreurs RelaxNG/bonne-formation) : un élément du document qui
@@ -303,17 +274,60 @@ def profile_warnings(root: etree._Element, profile_id: str) -> list[Diagnostic]:
     return diagnostics
 
 
+# -- Contrôle des références croisées (`docs/ROADMAP.md` §3.A3.5) -----------
+
+
+def reference_diagnostics(root: etree._Element) -> list[Diagnostic]:
+    """Toute valeur ``#id`` portée par un attribut de référence interne
+    (:data:`_REFERENCE_ATTRIBUTES` — ``@ref``, ``@target``, ``@wit``,
+    ``@corresp``, ``@resp``, ``@who``, ``@facs``) doit pointer vers un
+    ``@xml:id`` existant dans le document. Le schéma RelaxNG ne le
+    vérifie pas (``teidata.pointer`` n'est pas un type IDREF) : ce
+    contrôle applicatif comble ce trou, en sévérité « erreur » (même
+    motif de détection déjà utilisé par
+    ``tests/test_tei_samples_corpus.py::test_unresolved_reference_sample_actually_dangles``).
+    """
+    known_ids = {el.get(_XML_ID_ATTR) for el in root.iter() if el.get(_XML_ID_ATTR)}
+    diagnostics: list[Diagnostic] = []
+    for element in root.iter():
+        if not isinstance(element.tag, str):
+            continue
+        for attr_name in _REFERENCE_ATTRIBUTES:
+            value = element.get(attr_name)
+            if not value or not value.startswith("#"):
+                continue
+            target = value[1:]
+            if target in known_ids:
+                continue
+            diagnostics.append(
+                Diagnostic(
+                    severity=SEVERITY_ERROR,
+                    line=element.sourceline or 1,
+                    column=None,
+                    message=(
+                        f"Référence interne non résolue : {attr_name}=\"{value}\" sur "
+                        f"l'élément {_element_gloss(_local_name(element.tag))} ne "
+                        f"correspond à aucun @xml:id du document."
+                    ),
+                    xpath=None,
+                )
+            )
+    return diagnostics
+
+
 # -- Agrégation ----------------------------------------------------------------
 
 
 def compute_diagnostics(text: str, profile_id: str | None = None) -> list[Diagnostic]:
     """Calcule tous les diagnostics pour ``text`` : bonne formation (toujours),
-    puis, si bien formé, validation RelaxNG + avertissements hors profil.
+    puis, si bien formé, validation RelaxNG + références croisées +
+    avertissements hors profil.
     """
     root, diagnostics = parse_with_diagnostics(text)
     if root is None:
         return diagnostics
     diagnostics.extend(validate_relaxng(root))
+    diagnostics.extend(reference_diagnostics(root))
     if profile_id:
         diagnostics.extend(profile_warnings(root, profile_id))
     diagnostics.sort(key=lambda d: (d.line, 0 if d.severity == SEVERITY_ERROR else 1))
