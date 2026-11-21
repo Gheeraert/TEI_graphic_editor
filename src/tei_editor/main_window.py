@@ -4,5 +4,5 @@ from PySide6.QtWidgets import QMainWindow
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
-        self.setWindowTitle("Éditeur TEI")
+        self.setWindowTitle("TIGRE — Éditeur graphique de TEI")
         self.resize(1024, 768)

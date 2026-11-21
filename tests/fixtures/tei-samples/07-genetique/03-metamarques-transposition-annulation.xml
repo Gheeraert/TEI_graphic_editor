@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 07-03 — GÉNÉTIQUE, niveau 3 : signes et gestes sur les gestes.
+     - metamark : signe qui dit COMMENT lire (caret d'insertion, flèche de transposition, stet).
+     - listTranspose/transpose : ordre de lecture final après transposition (dans profileDesc).
+     - retrace : mot repassé (réécrit) pour le rendre lisible.
+     - undo / redo : annuler / réaffirmer une intervention antérieure désignée par @target.
+     - mod : modification dont la nature n'est pas interprétée (usage prudent).
+     Éléments vérifiés dans les spécifications P5 (éléments intégrés depuis les propositions
+     « ge: » de TCW19). Texte INVENTÉ.
+     À tester : @target multiples (#a #b), éléments vides (undo/redo), listTranspose
+     placé dans profileDesc. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Brouillon avec métamarques (fictif)</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier><repository>Archives fictives</repository><idno>Ms 0003</idno></msIdentifier>
+          <physDesc>
+            <handDesc>
+              <handNote xml:id="m1" medium="encre noire">Main du premier jet.</handNote>
+              <handNote xml:id="m2" medium="crayon">Main des corrections.</handNote>
+            </handDesc>
+          </physDesc>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+    <profileDesc>
+      <listTranspose>
+        <desc>Inversion de « le vent » et « la mer » à la ligne 2.</desc>
+        <transpose>
+          <ptr target="#seg-mer"/>
+          <ptr target="#seg-vent"/>
+        </transpose>
+      </listTranspose>
+    </profileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div hand="#m1">
+        <p>
+          <lb n="1"/>Le soir <metamark function="insertion" place="above" target="#ajout1">∧</metamark>tombe
+          <add xml:id="ajout1" place="above" hand="#m2">doucement</add> sur la ville.
+          <lb n="2"/>Écoute <seg xml:id="seg-vent">le vent</seg>
+          <metamark function="transposition" place="margin" target="#seg-vent #seg-mer">↻</metamark>
+          et <seg xml:id="seg-mer">la mer</seg> qui se répondent.
+          <lb n="3"/>Un mot <retrace hand="#m2" cause="lisibilité">presque effacé</retrace> repassé au crayon.
+          <lb n="4"/>On a barré <del xml:id="biffure1" rend="strikethrough" hand="#m2">ce mot</del>
+          <undo target="#biffure1" hand="#m2" rend="gommage"/> puis annulé la biffure,
+          <lb n="5"/>puis <del xml:id="biffure2" rend="strikethrough" hand="#m2">cet autre mot</del>
+          <redo target="#biffure2" hand="#m1" rend="encre"/> biffé de nouveau à l'encre.
+          <lb n="6"/><metamark function="stet" place="margin">bon</metamark>Ce passage est maintenu.
+          <lb n="7"/>Une marque dont la nature reste <mod type="inconnue" hand="#m2">incertaine</mod>.
+        </p>
+      </div>
+    </body>
+  </text>
+</TEI>

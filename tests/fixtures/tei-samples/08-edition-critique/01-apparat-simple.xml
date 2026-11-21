@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 08-01 — Édition critique : apparat par segments parallèles.
+     Module de référence : 8 Édition critique.
+     Texte INVENTÉ ; témoins fictifs. app / lem / rdg, @wit vers listWit.
+     À tester : insertion d'un app autour d'une sélection, complétion de @wit sur
+     les xml:id des témoins, contrôle des références. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Édition critique d'exemple</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc>
+        <listWit>
+          <witness xml:id="A">Édition originale, 1660.</witness>
+          <witness xml:id="B">Seconde édition, 1663.</witness>
+          <witness xml:id="C">Manuscrit de l'auteur.</witness>
+        </listWit>
+      </sourceDesc>
+    </fileDesc>
+    <encodingDesc>
+      <variantEncoding method="parallel-segmentation" location="internal"/>
+    </encodingDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div>
+        <p>Le roi <app>
+            <lem wit="#A #B">vint</lem>
+            <rdg wit="#C">venait</rdg>
+          </app> à la ville, accompagné de <app>
+            <lem wit="#A">ses gardes</lem>
+            <rdg wit="#B">sa garde</rdg>
+            <rdg wit="#C"><gap reason="lacune"/></rdg>
+          </app>.</p>
+        <p>Une variante d'omission : <app>
+            <lem wit="#A #B #C">le lendemain</lem>
+          </app> le roi repartit<app><lem wit="#A #C"/><rdg wit="#B">, fort tard</rdg></app>.</p>
+      </div>
+    </body>
+  </text>
+</TEI>

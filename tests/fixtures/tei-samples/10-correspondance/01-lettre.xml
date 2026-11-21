@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 10-01 — Lettre : correspDesc dans l'en-tête, opener/closer dans le corps.
+     Utile pour les corpus épistolaires. Lettre INVENTÉE.
+     À tester : dateline/date, salute, signed, postscript, pb/lb. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Lettre de Marie à Jeanne, 12 mai 1840 (fictive)</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc><p>Lettre inventée.</p></sourceDesc>
+    </fileDesc>
+    <profileDesc>
+      <correspDesc>
+        <correspAction type="sent">
+          <persName>Marie Exemple</persName>
+          <placeName>Rouen</placeName>
+          <date when="1840-05-12"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName>Jeanne Exemple</persName>
+          <placeName>Paris</placeName>
+        </correspAction>
+      </correspDesc>
+    </profileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="lettre">
+        <opener>
+          <dateline><placeName>Rouen</placeName>, le <date when="1840-05-12">12 mai 1840</date></dateline>
+          <salute>Ma chère Jeanne,</salute>
+        </opener>
+        <p>Je t'écris pour te dire que tout va bien.</p>
+        <p>Embrasse les enfants.</p>
+        <closer>
+          <salute>Je t'embrasse tendrement.</salute>
+          <signed>Marie</signed>
+        </closer>
+        <postscript><p>P.-S. Réponds vite.</p></postscript>
+      </div>
+    </body>
+  </text>
+</TEI>

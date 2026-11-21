@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 01-01 — Document TEI minimal valide.
+     Module de référence (typologie TEI by Example) : 1-2 Structure commune.
+     À tester : création d'un nouveau document, squelette obligatoire. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Document minimal</title>
+      </titleStmt>
+      <publicationStmt>
+        <p>Document d'exemple, non publié.</p>
+      </publicationStmt>
+      <sourceDesc>
+        <p>Document né numérique : aucune source.</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <p>Un paragraphe, c'est tout ce qu'il faut pour un document valide.</p>
+    </body>
+  </text>
+</TEI>

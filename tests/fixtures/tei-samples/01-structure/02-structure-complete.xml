@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 01-02 — Structure complète : front / body / back, divisions typées,
+     sauts de page et de ligne.
+     À tester : plan structurel (arbre), @type/@n sur div, empilement de div,
+     page de titre, pb/lb en éléments vides. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Petit traité d'exemple</title><author>A. Auteur</author></titleStmt>
+      <publicationStmt><p>Échantillon de test.</p></publicationStmt>
+      <sourceDesc><p>Texte inventé pour les besoins de l'exemple.</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <front>
+      <titlePage>
+        <docTitle>
+          <titlePart type="main">Petit traité d'exemple</titlePart>
+          <titlePart type="sub">où l'on montre comment structurer un livre</titlePart>
+        </docTitle>
+        <docAuthor>A. Auteur</docAuthor>
+        <docImprint><pubPlace>Rouen</pubPlace>, <publisher>chez l'imprimeur</publisher>, <docDate when="1672">M. DC. LXXII</docDate></docImprint>
+      </titlePage>
+      <div type="dedicace">
+        <head>À Madame de ***</head>
+        <p>Madame, voici un petit ouvrage…</p>
+        <signed>A. Auteur</signed>
+      </div>
+    </front>
+    <body>
+      <div type="partie" n="1">
+        <head>Première partie</head>
+        <div type="chapitre" n="1">
+          <head>Du commencement</head>
+          <p>Premier paragraphe du premier chapitre.<pb n="2"/> Il se poursuit sur la page suivante,
+             avec un saut de ligne<lb/>au milieu d'une phrase.</p>
+          <p>Second paragraphe.</p>
+        </div>
+        <div type="chapitre" n="2">
+          <head>De la suite</head>
+          <p>Un chapitre peut contenir des sections :</p>
+          <div type="section">
+            <head>Une section</head>
+            <p>Texte de la section.</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    <back>
+      <div type="notes">
+        <head>Notes de l'éditeur</head>
+        <p>Rien à signaler.</p>
+      </div>
+    </back>
+  </text>
+</TEI>

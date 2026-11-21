@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CAS INVALIDE 03 — Bien formé ; @ref et @wit pointent vers des identifiants inexistants.
+     Attendu : deux avertissements de référence non résolue (#absent, #T9). -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Références cassées</title></titleStmt>
+      <publicationStmt><p>x</p></publicationStmt>
+      <sourceDesc><listWit><witness xml:id="T1">Témoin</witness></listWit></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text><body><p><persName ref="#absent">Quelqu'un</persName> <app><lem wit="#T1">a</lem><rdg wit="#T9">b</rdg></app></p></body></text>
+</TEI>

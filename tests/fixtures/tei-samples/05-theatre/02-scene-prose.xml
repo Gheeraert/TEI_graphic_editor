@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 05-02 — Théâtre en prose : répliques en <p>, didascalies en ligne,
+     <ab> quand la nature (vers/prose) est indécise.
+     À tester : sp avec p, stage incorporé dans une réplique, ab. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Scène en prose (fictive)</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc><p>Texte inventé.</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="act" n="1">
+        <div type="scene" n="2">
+          <head>SCÈNE II</head>
+          <sp>
+            <speaker>LE MAÎTRE</speaker>
+            <p>Que fais-tu là ? <stage type="business">Il regarde autour de lui.</stage> Réponds !</p>
+          </sp>
+          <sp>
+            <speaker>LE VALET</speaker>
+            <ab>Rien, Monsieur, je range.</ab>
+          </sp>
+        </div>
+      </div>
+    </body>
+  </text>
+</TEI>

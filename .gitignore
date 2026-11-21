@@ -9,6 +9,10 @@ dist/
 .idea/
 .vscode/
 
+# Archive d'origine du corpus de test, deja extraite dans
+# tests/fixtures/tei-samples/ (contenu suivi par git).
+/tei-samples.zip
+
 # Cache local du téléchargement des sources TEI P5 officielles
 # (tools/build_catalog.py) : volumineux, reproductible, pas versionné.
 .cache/

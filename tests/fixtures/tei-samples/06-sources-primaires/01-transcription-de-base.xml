@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 06-01 — Transcription de sources primaires (sans genèse) :
+     pages, colonnes, lignes, mots courants, abréviations, normalisation, lacunes.
+     Module de référence : 7 Sources primaires.
+     À tester : choice (orig/reg, sic/corr, abbr/expan), unclear, gap, supplied,
+     damage, fw (en-tête courant, réclame), lb @break="no". -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Page imprimée transcrite</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc><p>Page fictive d'un imprimé du XVIIe siècle.</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div>
+        <pb n="12"/>
+        <fw type="header" place="top">DES PASSIONS.</fw>
+        <p>
+          <lb/>Cette <choice><orig>paſſion</orig><reg>passion</reg></choice> est <choice><sic>vertueuse</sic><corr>vertueux</corr></choice>
+          <lb/>quand elle s'accompagne de <choice><abbr>Mr</abbr><expan>Monsieur</expan></choice> de B<supplied reason="illisible">ouillon</supplied>,
+          <lb/>qui <unclear reason="tache">disoit</unclear> que l'hon<lb break="no"/>neur
+          <lb/>com<lb break="no"/>mande <gap reason="lacune" unit="mot" quantity="2"/> en toute chose.
+        </p>
+        <fw type="catch" place="bottom">Ce</fw>
+        <pb n="13"/>
+        <p><damage agent="eau" degree="0.4"><lb/>Passage abîmé par l'humidité</damage>, mais lisible.</p>
+      </div>
+    </body>
+  </text>
+</TEI>

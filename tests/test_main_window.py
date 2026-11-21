@@ -5,5 +5,5 @@ from tei_editor.main_window import MainWindow
 
 def test_main_window_opens_empty(qapp: QApplication) -> None:
     window = MainWindow()
-    assert window.windowTitle() == "Éditeur TEI"
+    assert window.windowTitle() == "TIGRE — Éditeur graphique de TEI"
     window.close()

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CAS INVALIDE 04 — Bien formé mais hors modèle de contenu TEI :
+     (a) <p> imbriqué dans <p> ; (b) <head> placé après un <p> ; (d) @when avec une date impossible.
+     Attendu : erreurs (a), (b), (d) à la validation RelaxNG du profil tei_all
+     (non détectées par tools/check_samples.py, qui ne contrôle pas les modèles de contenu). -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Hors modèle</title></titleStmt>
+      <publicationStmt><p>x</p></publicationStmt>
+      <sourceDesc><p>x</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div>
+        <p>Paragraphe <p>imbriqué (a)</p>.</p>
+        <head>Titre trop tard (b)</head>
+        <p>Date impossible : <date when="1672-13-45">(d)</date>.</p>
+      </div>
+    </body>
+  </text>
+</TEI>

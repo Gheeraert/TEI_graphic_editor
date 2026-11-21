@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 07-02 — GÉNÉTIQUE, niveau 2 : QUI et QUAND.
+     - Mains : handNote dans l'en-tête, @hand sur les altérations, handShift dans le texte.
+     - Stades : listChange/change dans revisionDesc ; @change="#stadeN" sur les éléments
+       (ordre chronologique déclaré par listChange/@ordered="true").
+     - Correction immédiate (@instant="true") vs. différée (défaut).
+     - Ordre de plusieurs interventions au même endroit : @seq.
+     Texte INVENTÉ (brouillon de poème fictif).
+     À tester : inspecteur d'attributs (liste des mains et stades déclarés), contrôle des
+     références #m1, #m2, #stade1… vers des xml:id existants. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Brouillon de poème (fictif)</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier><repository>Archives fictives</repository><idno>Ms 0002, f. 3v</idno></msIdentifier>
+          <physDesc>
+            <handDesc>
+              <handNote xml:id="m1" scribe="Le poète" medium="encre noire">Premier jet.</handNote>
+              <handNote xml:id="m2" scribe="Le poète" medium="encre rouge">Relecture.</handNote>
+              <handNote xml:id="m3" scribe="Un ami" medium="crayon">Suggestions d'une autre main.</handNote>
+            </handDesc>
+          </physDesc>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+    <revisionDesc>
+      <listChange ordered="true">
+        <change xml:id="stade1" when="1851-03">Premier jet.</change>
+        <change xml:id="stade2" when="1851-04">Relecture à l'encre rouge.</change>
+        <change xml:id="stade3" notAfter="1852">Suggestions de l'ami.</change>
+      </listChange>
+    </revisionDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div change="#stade1" hand="#m1">
+      <lg>
+        <l n="1">La lune se couche sur la
+          <subst instant="true"><del rend="strikethrough">mer</del><add>plaine</add></subst>
+          endormie</l>
+        <l n="2">Et le vent
+          <subst change="#stade2" hand="#m2">
+            <del seq="1" rend="strikethrough">chante</del>
+            <add seq="2" place="above">murmure</add>
+          </subst>
+          dans les roseaux</l>
+        <l n="3">Une barque
+          <handShift new="#m3" medium="crayon"/><add change="#stade3" place="above">solitaire</add>
+          <handShift new="#m1"/> s'éloigne</l>
+      </lg>
+      </div>
+    </body>
+  </text>
+</TEI>

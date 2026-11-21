@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 07-01 — GÉNÉTIQUE, niveau 1 : les quatre gestes de base.
+     add (ajout), del (suppression), subst (substitution = del + add liés),
+     restore (annulation d'une suppression). Plus : delSpan/addSpan pour les
+     passages qui chevauchent d'autres balises.
+     Référence : encodage des sources primaires (chap. 11 des Guidelines) et propositions
+     du groupe « éditions génétiques » (TCW19). Texte INVENTÉ (brouillon de lettre fictif).
+     À tester : palette « Genèse », enveloppement de sélection par add/del/subst,
+     @place sur add, @rend sur del, @hand renvoyant à un handNote déclaré dans l'en-tête. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Brouillon de lettre (fictif)</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier><repository>Archives fictives</repository><idno>Ms 0001, f. 1r</idno></msIdentifier>
+          <physDesc>
+            <handDesc>
+              <handNote xml:id="m1" scribe="Pauline" medium="encre brune">Main principale, encre brune.</handNote>
+              <handNote xml:id="m2" scribe="Pauline" medium="crayon">Corrections au crayon, plus tardives.</handNote>
+            </handDesc>
+          </physDesc>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div>
+        <p>
+          <lb n="1"/>Mon cher frère, je vous écris
+          <subst><del rend="strikethrough">à la hâte</del><add place="above">en grande hâte</add></subst>
+          <lb n="2"/>pour vous dire que <add place="margin" hand="#m2">notre</add> père est arrivé
+          <lb n="3"/>avec <del rend="strikethrough">trois</del> <add place="above">quatre</add> valises
+          <lb n="4"/>et <del><gap reason="illisible" unit="chars" quantity="6"/></del> de mauvaise humeur.
+          <lb n="5"/>Il a dit qu'il <restore hand="#m1"><del rend="strikethrough">resterait</del></restore> huit jours.
+        </p>
+        <p>
+          <lb n="6"/><delSpan spanTo="#fin-biffure" rend="strikethrough"/>Ici un passage entier biffé, qui court sur
+          <lb n="7"/>plusieurs lignes et peut contenir d'autres <hi rend="underline">balises</hi>.<anchor xml:id="fin-biffure"/>
+          <lb n="8"/>Je vous embrasse.<addSpan spanTo="#fin-ajout" place="margin"/> Post-scriptum ajouté en marge,
+          <lb n="9"/>sur deux lignes.<anchor xml:id="fin-ajout"/>
+        </p>
+      </div>
+    </body>
+  </text>
+</TEI>

@@ -1,4 +1,4 @@
-# Éditeur TEI
+# TIGRE — TEI Graphic Editor
 
 Application de bureau (PySide6, lxml) pour produire et éditer du XML-TEI P5.
 

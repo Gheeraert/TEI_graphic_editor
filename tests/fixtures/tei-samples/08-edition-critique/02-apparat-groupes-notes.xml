@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 08-02 — Apparat plus riche : groupes de leçons (rdgGrp), précisions
+     sur un témoin (witDetail), note de l'éditeur dans l'apparat, @type de variante.
+     À tester : éléments rarement utilisés, imbrications app/rdgGrp/rdg. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Apparat riche (exemple)</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc>
+        <listWit>
+          <witness xml:id="T1">Témoin 1</witness>
+          <witness xml:id="T2">Témoin 2</witness>
+          <witness xml:id="T3">Témoin 3</witness>
+          <witness xml:id="T4">Témoin 4</witness>
+        </listWit>
+      </sourceDesc>
+    </fileDesc>
+    <encodingDesc><variantEncoding method="parallel-segmentation" location="internal"/></encodingDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <p>Il prit la <app type="substantive">
+          <lem wit="#T1">plume</lem>
+          <rdgGrp type="lexicale">
+            <rdg wit="#T2 #T3">pointe</rdg>
+            <rdg wit="#T4"><witDetail wit="#T4" type="correction">de seconde main</witDetail>pointe</rdg>
+          </rdgGrp>
+          <note>Le choix de « plume » est justifié par le contexte immédiat.</note>
+        </app> et écrivit.</p>
+    </body>
+  </text>
+</TEI>

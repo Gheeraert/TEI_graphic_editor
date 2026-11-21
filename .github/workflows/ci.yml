@@ -6,7 +6,10 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     env:
       QT_QPA_PLATFORM: offscreen
     steps:
@@ -14,7 +17,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Installer les dépendances système pour Qt (offscreen)
+      - name: Installer les dépendances système pour Qt (offscreen, Linux)
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libegl1 libgl1 libxkbcommon0

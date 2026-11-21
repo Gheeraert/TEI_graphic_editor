@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 02-01 — En-tête TEI complet, cible de l'assistant d'en-tête.
+     Module de référence : 3 L'en-tête TEI.
+     À tester : formulaire multi-onglets (titre, responsabilités, édition, publication,
+     source, encodage, profil, révisions) ; relecture SANS PERTE d'un en-tête existant.
+     Note : certaines données (idno, ORCID, licence) sont fictives. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title type="main">Les Lettres d'exemple</title>
+        <title type="sub">édition électronique</title>
+        <author>
+          <persName><forename>Alice</forename> <surname>Auteur</surname></persName>
+        </author>
+        <editor role="scientifique"><persName ref="https://orcid.org/0000-0000-0000-0000">Bernard Éditeur</persName></editor>
+        <respStmt>
+          <resp>Encodage TEI</resp>
+          <name>Camille Encodeuse</name>
+        </respStmt>
+        <respStmt>
+          <resp>Relecture</resp>
+          <name>Daniel Relecteur</name>
+        </respStmt>
+        <funder>Chaire d'excellence en édition numérique</funder>
+      </titleStmt>
+      <editionStmt>
+        <edition n="1">Première édition électronique</edition>
+      </editionStmt>
+      <extent>12 lettres</extent>
+      <publicationStmt>
+        <publisher>Presses universitaires d'exemple</publisher>
+        <pubPlace>Rouen</pubPlace>
+        <date when="2026-11-21">21 novembre 2026</date>
+        <idno type="URI">https://example.org/lettres-exemple</idno>
+        <availability status="free">
+          <licence target="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</licence>
+        </availability>
+      </publicationStmt>
+      <seriesStmt>
+        <title>Collection d'exemples</title>
+        <idno type="ISSN">0000-0000</idno>
+      </seriesStmt>
+      <notesStmt>
+        <note>Fichier d'essai pour l'éditeur TEI.</note>
+      </notesStmt>
+      <sourceDesc>
+        <bibl>
+          <author>Alice Auteur</author>, <title level="m">Lettres d'exemple</title>,
+          <pubPlace>Paris</pubPlace>, <publisher>L'Imprimeur</publisher>, <date when="1845">1845</date>.
+        </bibl>
+      </sourceDesc>
+    </fileDesc>
+    <encodingDesc>
+      <projectDesc>
+        <p>Édition numérique réalisée pour tester un éditeur graphique de TEI.</p>
+      </projectDesc>
+      <editorialDecl>
+        <normalization>
+          <p>L'orthographe est modernisée ; les modifications sont signalées par <gi>choice</gi>.</p>
+        </normalization>
+        <hyphenation eol="none">
+          <p>Les césures de fin de ligne ne sont pas conservées.</p>
+        </hyphenation>
+        <quotation marks="none">
+          <p>Les guillemets de l'original sont remplacés par <gi>q</gi>.</p>
+        </quotation>
+      </editorialDecl>
+      <tagsDecl>
+        <rendition xml:id="r-italique" scheme="css">font-style: italic</rendition>
+      </tagsDecl>
+      <refsDecl>
+        <p>Les lettres sont identifiées par <att>xml:id</att> de la forme « l001 ».</p>
+      </refsDecl>
+    </encodingDesc>
+    <profileDesc>
+      <creation><date when="1845">1845</date></creation>
+      <langUsage>
+        <language ident="fr">français</language>
+        <language ident="la" usage="5">latin (citations)</language>
+      </langUsage>
+      <textClass>
+        <keywords scheme="#libre">
+          <term>correspondance</term>
+          <term>XIXe siècle</term>
+        </keywords>
+      </textClass>
+      <particDesc>
+        <listPerson>
+          <person xml:id="p-auteur"><persName>Alice Auteur</persName></person>
+        </listPerson>
+      </particDesc>
+    </profileDesc>
+    <revisionDesc status="draft">
+      <change when="2026-11-21" who="#p-auteur">Création du fichier d'exemple.</change>
+    </revisionDesc>
+  </teiHeader>
+  <text><body><p>Texte d'exemple.</p></body></text>
+</TEI>

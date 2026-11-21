@@ -43,3 +43,14 @@
 3. **`typography.py` est placé sous `tei/typography.py`**, pas sous un éventuel futur paquet `markdown/` (qui n'existe pas dans ce projet, TEI n'étant pas du Markdown) : ces transformations de texte pur (guillemets, espaces insécables, ligature œ) sont génériques mais leur seul point d'application prévu est le contenu textuel d'un document TEI (ADR-0001, §4 de `docs/ROADMAP.md`). Seules les fonctions de texte pur sont reprises ; `split_century_ordinals`/`_split_run_by_century` (couplées au pivot `InlineRun` de Mérope) sont laissées de côté — voir `docs/AUDIT_MEROPE.md`.
 
 **Conséquences.** Aucune de ces décisions ne change l'architecture adoptée en ADR-0001/0002. Elles sont consignées ici plutôt que tranchées silencieusement, conformément à `CLAUDE.md`.
+
+## ADR-0005 — Résolution des décisions `docs/ROADMAP.md` §7
+
+**Statut.** Adopté.
+
+**Décisions.**
+
+1. **Nom du projet : « TEI Graphic Editor — TIGRE ».** Le nom de paquet Python reste `tei_editor` (ADR-0002) : TIGRE est le nom/titre affiché (fenêtre, documentation), pas un renommage de code. Un renommage du paquet reste possible plus tard sur demande explicite.
+2. **Profils de validation prioritaires : confirmés** — `tei_all`, `edition_textes`, `theatre`, `edition_critique` (déjà générés en phase 1). `commons_publishing` reste pour une phase ultérieure (schéma RNG/Schematron déjà extrait en phase 2, profil JSON pas encore construit).
+3. **Plateformes visées : Windows, macOS, Linux.**
+4. **Corpus de test réel : `tests/fixtures/tei-samples/`** — 21 documents (16 valides, 5 invalides) fournis par l'utilisateur, avec `README.md` et `manifest.json` propres indexant module/profil/éléments/erreurs attendues par fichier. Vérifié par `tests/test_tei_samples_corpus.py` : analyse durcie (`xml_safety`) de tous les cas valides, rejet effectif des cas « mal formé » et « xml:id dupliqué » (ce dernier refusé dès l'analyse par libxml2, qui traite `xml:id` comme un attribut ID), détection de référence `#id` non résolue. Les deux cas restants (« hors modèle », « en-tête incomplet ») demandent une validation RelaxNG/Schematron (phase 4) pour être détectés — non vérifiables avant cette phase, noté dans le README du corpus lui-même.

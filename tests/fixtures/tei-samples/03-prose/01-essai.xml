@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 03-01 — Prose : titres, paragraphes, éléments de niveau phrastique,
+     citations, notes, liens, listes, tableau, figure.
+     Module de référence : 4 Prose.
+     À tester : enveloppement de sélection (hi, emph, foreign, title, q), insertion de
+     note, ref/ptr, list/item, table/row/cell, figure/graphic. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Essai d'exemple</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc><p>Texte inventé.</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="chapitre">
+        <head>Du bon usage de la balise</head>
+        <p>On <emph>souligne</emph> ce qui compte, on met en <foreign xml:lang="la">italique</foreign>
+           ce qui vient d'ailleurs, et l'on cite un titre : <title level="m">Les Caractères</title>.
+           Le mot <term>mixte</term> est défini dans le <gloss>contenu mixte</gloss>.
+           Un <hi rend="smallcaps">nom en petites capitales</hi> relève de la forme, non du sens.</p>
+        <p>Citation incluse dans la phrase : il répondit <q>cela suffit</q>.
+           Citation détachée :</p>
+        <quote>
+          <p>Un paragraphe cité, sur plusieurs lignes, détaché du texte courant.</p>
+        </quote>
+        <cit>
+          <quote>Une citation accompagnée de sa référence.</quote>
+          <bibl>Auteur, <title level="m">Titre</title>, p. 12.</bibl>
+        </cit>
+        <p>Une note de bas de page.<note place="foot" n="1">Elle contient du texte <emph>balisé</emph>.</note>
+           Un lien externe : <ref target="https://tei-c.org">le site de la TEI</ref>.
+           Un renvoi interne : voir <ref target="#tab1">le tableau</ref>.</p>
+        <list type="ordered">
+          <item>Premier point</item>
+          <item>Second point, avec sous-liste :
+            <list type="unordered">
+              <item>un détail</item>
+              <item>un autre détail</item>
+            </list>
+          </item>
+        </list>
+        <list type="gloss">
+          <label>mot</label><item>définition du mot</item>
+          <label>autre</label><item>autre définition</item>
+        </list>
+        <table xml:id="tab1" rows="3" cols="2">
+          <head>Un tableau</head>
+          <row role="label"><cell role="label">Colonne A</cell><cell role="label">Colonne B</cell></row>
+          <row><cell>1</cell><cell>2</cell></row>
+          <row><cell>3</cell><cell>4</cell></row>
+        </table>
+        <figure>
+          <graphic url="images/exemple.jpg"/>
+          <head>Légende de la figure</head>
+          <figDesc>Description alternative pour l'accessibilité.</figDesc>
+        </figure>
+      </div>
+    </body>
+  </text>
+</TEI>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 04-01 — Poésie : strophes (lg), vers (l), rimes, numérotation.
+     Module de référence : 5 Poésie. Texte du domaine public (La Fontaine, Fables, I, 2).
+     À tester : lg/l, @type de strophe, @rhyme, vers en retrait (@rend), titre de poème,
+     numérotation automatique des vers via @n. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Extrait de fable</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc><p>Jean de La Fontaine, Fables choisies mises en vers, 1668 (domaine public).</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <lg type="poeme" xml:id="fable-i-2">
+        <head>Le Corbeau et le Renard</head>
+        <lg type="distique" rhyme="aa">
+          <l n="1" met="-+-+-+-+-+-+">Maître Corbeau, sur un arbre perché,</l>
+          <l n="2">Tenait en son bec un fromage.</l>
+        </lg>
+        <lg type="distique" rhyme="bb">
+          <l n="3">Maître Renard, par l'odeur alléché,</l>
+          <l n="4" rend="retrait">Lui tint à peu près ce langage :</l>
+        </lg>
+      </lg>
+    </body>
+  </text>
+</TEI>

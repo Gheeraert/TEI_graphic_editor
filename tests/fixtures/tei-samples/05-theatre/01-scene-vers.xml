@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 05-01 — Théâtre en vers : distribution, actes/scènes, répliques,
+     didascalies, vers partagés (@part), apartés.
+     Module de référence : 6 Théâtre. Scène INVENTÉE (alexandrins approximatifs) :
+     elle sert à tester le balisage, pas la métrique.
+     À tester : sp/speaker/@who, stage, l@part (I/M/F), castList, div act/scene. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Le Marchand d'exemples (scène fictive)</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc><p>Pièce fictive composée pour les tests.</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <front>
+      <castList>
+        <head>Personnages</head>
+        <castItem><role xml:id="alcandre">ALCANDRE</role>, <roleDesc>vieux marchand</roleDesc></castItem>
+        <castItem><role xml:id="elise">ÉLISE</role>, <roleDesc>sa fille</roleDesc></castItem>
+        <castItem><role xml:id="damis">DAMIS</role>, <roleDesc>amant d'Élise</roleDesc></castItem>
+      </castList>
+      <set><p>La scène est à Rouen, dans la boutique d'Alcandre.</p></set>
+    </front>
+    <body>
+      <div type="act" n="1">
+        <head>ACTE PREMIER</head>
+        <div type="scene" n="1">
+          <head>SCÈNE PREMIÈRE</head>
+          <stage type="entrance">ALCANDRE, ÉLISE.</stage>
+          <sp who="#alcandre">
+            <speaker>ALCANDRE</speaker>
+            <lg>
+              <l>Ma fille, il faut enfin que je vous parle net :</l>
+              <l>Damis n'est point un homme à qui l'on se promet.</l>
+            </lg>
+          </sp>
+          <sp who="#elise">
+            <speaker>ÉLISE</speaker>
+            <stage type="delivery">à part</stage>
+            <l part="I">Ô ciel !</l>
+          </sp>
+          <sp who="#alcandre">
+            <speaker>ALCANDRE</speaker>
+            <l part="M">Qu'avez-vous dit ?</l>
+          </sp>
+          <sp who="#elise">
+            <speaker>ÉLISE</speaker>
+            <l part="F">Rien, mon père, rien du tout.</l>
+          </sp>
+          <stage type="entrance">DAMIS entre.</stage>
+          <sp who="#damis">
+            <speaker>DAMIS</speaker>
+            <stage type="delivery">saluant</stage>
+            <l>Je viens, Monsieur, me rendre à vos ordres.</l>
+          </sp>
+        </div>
+      </div>
+    </body>
+  </text>
+</TEI>

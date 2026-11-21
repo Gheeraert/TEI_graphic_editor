@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 09-01 — Noms, lieux, dates, index.
+     Module de référence : 2 Structure commune (noms, dates) ; données associées.
+     À tester : persName/placeName/orgName avec @ref vers un index interne (#id) ou
+     externe (URI) ; date avec @when/@notBefore/@notAfter ; listPerson/listPlace comme
+     sources de complétion pour @ref. Personnes/lieux FICTIFS ou publics. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Entités nommées (exemple)</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc><p>Texte inventé.</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div>
+        <p><persName ref="#p-marie">Marie</persName> quitta <placeName ref="#l-rouen">Rouen</placeName>
+           le <date when="1672-04-15">15 avril 1672</date>, vers <date notBefore="1672-04-15T08:00" notAfter="1672-04-15T10:00">huit ou neuf heures</date>,
+           pour rejoindre <orgName ref="#o-abbaye">l'abbaye</orgName> dans le courant de
+           <date from="1672-04" to="1672-05">l'été</date>. Elle emportait <measure unit="livre" quantity="3">trois livres</measure>
+           et <num value="12">douze</num> écus.</p>
+        <p>Un nom non identifié : <rs type="person">le voisin</rs>.</p>
+      </div>
+    </body>
+    <back>
+      <div type="index">
+        <listPerson>
+          <person xml:id="p-marie"><persName><forename>Marie</forename> <surname>Exemple</surname></persName>
+            <birth when="1640"/><death notAfter="1700"/></person>
+        </listPerson>
+        <listPlace>
+          <place xml:id="l-rouen"><placeName>Rouen</placeName><location><geo>49.4431 1.0993</geo></location></place>
+        </listPlace>
+        <listOrg>
+          <org xml:id="o-abbaye"><orgName>Abbaye d'exemple</orgName></org>
+        </listOrg>
+      </div>
+    </back>
+  </text>
+</TEI>

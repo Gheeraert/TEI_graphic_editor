@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CAS INVALIDE 05 — En-tête sans <publicationStmt> ni <sourceDesc>, <title> absent,
+     texte sans <body>. Attendu : plusieurs erreurs de structure minimale. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt></titleStmt>
+    </fileDesc>
+  </teiHeader>
+  <text></text>
+</TEI>

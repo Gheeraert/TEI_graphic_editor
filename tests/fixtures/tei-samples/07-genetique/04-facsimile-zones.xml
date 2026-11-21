@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!-- ÉCHANTILLON 07-04 — GÉNÉTIQUE, niveau 4 : lien texte ↔ image du document.
+     facsimile / surface / zone (coordonnées ulx, uly, lrx, lry ; @rotate pour une
+     écriture orientée), @facs sur pb / lb / add pour relier la transcription à la zone.
+     Approche « document » : on décrit d'abord ce qui est SUR la page.
+     À tester : saisie de coordonnées, contrôle des références #zone.
+     L'image « f1r.jpg » est fictive. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="fr">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Feuillet avec facsimilé (fictif)</title></titleStmt>
+      <publicationStmt><p>Échantillon de test, non publié.</p></publicationStmt>
+      <sourceDesc><p>Feuillet fictif, recto.</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <facsimile>
+    <surface xml:id="f1r" ulx="0" uly="0" lrx="2000" lry="3000">
+      <graphic url="f1r.jpg" width="2000px" height="3000px"/>
+      <zone xml:id="z-texte" type="main" ulx="200" uly="250" lrx="1700" lry="2600"/>
+      <zone xml:id="z-marge" type="marginalia" ulx="1720" uly="900" lrx="1950" lry="1500" rotate="90"/>
+      <zone xml:id="z-ligne1" ulx="200" uly="250" lrx="1700" lry="330"/>
+    </surface>
+  </facsimile>
+  <text>
+    <body>
+      <div>
+        <pb n="1r" facs="#f1r"/>
+        <p>
+          <lb n="1" facs="#z-ligne1"/>Une ligne ancrée sur sa zone dans l'image.
+          <lb n="2"/>Une addition marginale <add place="margin" facs="#z-marge">tournée de quatre-vingt-dix degrés</add>.
+        </p>
+      </div>
+    </body>
+  </text>
+</TEI>

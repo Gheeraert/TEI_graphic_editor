@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CAS INVALIDE 02 — Bien formé, mais @xml:id dupliqué (« a1 » deux fois).
+     Attendu : erreur d'unicité d'identifiant. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Doublon d'identifiant</title></titleStmt>
+      <publicationStmt><p>x</p></publicationStmt>
+      <sourceDesc><p>x</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text><body><p xml:id="a1">Un.</p><p xml:id="a1">Deux.</p></body></text>
+</TEI>

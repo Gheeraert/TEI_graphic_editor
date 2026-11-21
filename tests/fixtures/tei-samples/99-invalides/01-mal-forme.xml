@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CAS INVALIDE 01 — N'est pas du XML bien formé : balise <hi> jamais fermée, chevauchement.
+     Attendu : erreur de bonne formation, ligne 12. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Mal formé</title></titleStmt>
+      <publicationStmt><p>x</p></publicationStmt>
+      <sourceDesc><p>x</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text><body><p>Un <hi>chevauchement <emph>mal</hi> imbriqué</emph>.</p></body></text>
+</TEI>
