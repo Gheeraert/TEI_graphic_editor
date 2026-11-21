@@ -38,7 +38,9 @@ from tei_editor.find_replace_dialog import FindReplaceDialog
 from tei_editor.menus import Menus, build_menu_bar, rebuild_recent_files_menu
 from tei_editor.prefs import settings as prefs
 from tei_editor.prefs.preferences_dialog import PreferencesDialog
+from tei_editor.header_dialog.wizard import HeaderWizardDialog
 from tei_editor.tei.profiles import list_profiles
+from tei_editor.tei.templates import template_text
 from tei_editor.tei.xml_safety import UnsafeXmlError, parse_xml_safely
 
 APP_TITLE = "TIGRE — Éditeur graphique de TEI"
@@ -145,7 +147,8 @@ class MainWindow(TagCommandsMixin, QMainWindow):
     def _connect_actions(self) -> None:
         actions = self.actions
 
-        actions.new.triggered.connect(self._new_document)
+        for template_id, template_action in actions.new_templates.by_id.items():
+            template_action.triggered.connect(partial(self._new_document_from_template, template_id))
         actions.open.triggered.connect(self._open_file_dialog)
         actions.save.triggered.connect(self._save_file)
         actions.save_as.triggered.connect(self._save_file_as)
@@ -189,6 +192,7 @@ class MainWindow(TagCommandsMixin, QMainWindow):
         actions.validate.triggered.connect(self._validate_document)
         for profile_id, profile_action in actions.profiles.by_id.items():
             profile_action.triggered.connect(partial(self._on_profile_chosen, profile_id))
+        actions.header_wizard.triggered.connect(self._open_header_wizard)
         actions.preferences.triggered.connect(self._open_preferences)
 
         actions.about.triggered.connect(self._show_about)
@@ -206,10 +210,10 @@ class MainWindow(TagCommandsMixin, QMainWindow):
         )
         return reply == QMessageBox.StandardButton.Yes
 
-    def _new_document(self) -> None:
+    def _new_document_from_template(self, template_id: str) -> None:
         if not self._confirm_discard_changes():
             return
-        self.editor.new_from_template()
+        self.editor.new_from_template(template_text(template_id))
         self.setWindowTitle(APP_TITLE)
         self._update_structural_info()
 
@@ -372,6 +376,10 @@ class MainWindow(TagCommandsMixin, QMainWindow):
     def _on_profile_chosen(self, profile_id: str) -> None:
         prefs.set_active_profile(self.settings, profile_id)
         self._apply_active_profile(profile_id)
+
+    def _open_header_wizard(self) -> None:
+        dialog = HeaderWizardDialog(self.editor, self)
+        dialog.exec()
 
     def _open_preferences(self) -> None:
         dialog = PreferencesDialog(self.settings, self)

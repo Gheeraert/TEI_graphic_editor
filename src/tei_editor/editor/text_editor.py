@@ -67,8 +67,11 @@ class XmlTextEditor(QPlainTextEdit):
         self.current_encoding: DocumentEncoding = _DEFAULT_ENCODING
 
     # -- Nouveau document --------------------------------------------------
-    def new_from_template(self) -> None:
-        self.setPlainText(NEW_DOCUMENT_TEMPLATE)
+    def new_from_template(self, template_text: str | None = None) -> None:
+        """Charge un modèle de nouveau document (``template_text``, l'un
+        des 4 modèles de `tei_editor.tei.templates` — phase 6 — ou le
+        modèle minimal par défaut)."""
+        self.setPlainText(template_text if template_text is not None else NEW_DOCUMENT_TEMPLATE)
         self.document().setModified(False)
         self.current_path = None
         self.current_encoding = _DEFAULT_ENCODING

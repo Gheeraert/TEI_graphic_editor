@@ -39,6 +39,7 @@ def test_file_menu_has_expected_actions(qapp: QApplication, tmp_path) -> None:
     labels = [action.text().replace("&", "") for action in file_menu.actions() if not action.isSeparator()]
     assert labels == [
         "Nouveau",
+        "Nouveau depuis un modèle",
         "Ouvrir...",
         "Fichiers récents",
         "Enregistrer",
@@ -111,6 +112,7 @@ def test_tools_menu_has_validate_profile_and_preferences(qapp: QApplication, tmp
     tools_menu = window.menuBar().actions()[5].menu()
     labels = [action.text().replace("&", "") for action in tools_menu.actions() if not action.isSeparator()]
     assert "Valider" in labels
+    assert "Assistant d'en-tête..." in labels
     assert "Préférences..." in labels
     profile_submenu = next(
         action.menu() for action in tools_menu.actions() if action.menu() is not None

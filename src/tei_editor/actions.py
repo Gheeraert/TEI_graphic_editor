@@ -17,6 +17,7 @@ from PySide6.QtGui import QAction, QActionGroup, QKeySequence
 from PySide6.QtWidgets import QWidget
 
 from tei_editor.prefs.settings import THEME_CHOICES
+from tei_editor.tei.templates import TEMPLATES
 
 
 def _action(parent: QWidget, text: str, *, shortcut: str | None = None, checkable: bool = False) -> QAction:
@@ -58,9 +59,23 @@ class ProfileActions:
 
 
 @dataclass
+class TemplateActions:
+    """Sous-menu « Nouveau > » (phase 6) : un ``QAction`` par modèle de
+    `tei_editor.tei.templates.TEMPLATES`."""
+
+    by_id: dict[str, QAction] = field(default_factory=dict)
+
+
+@dataclass
+class HeaderWizardAction:
+    open_wizard: QAction
+
+
+@dataclass
 class Actions:
     # Fichier
     new: QAction
+    new_templates: TemplateActions
     open: QAction
     recent_menu_placeholder: QAction  # remplacé dynamiquement par menus.py
     save: QAction
@@ -87,13 +102,23 @@ class Actions:
     # Outils
     validate: QAction
     profiles: ProfileActions
+    header_wizard: QAction
     preferences: QAction
     # Aide
     about: QAction
 
 
 def build_actions(parent: QWidget, *, profile_ids_and_labels: list[tuple[str, str]]) -> Actions:
+    # « Nouveau » (Ctrl+N) crée directement le modèle minimal (comportement
+    # de la phase 3 conservé) ; le sous-menu « Nouveau depuis un modèle »
+    # (phase 6) propose les 4 modèles, y compris ce même modèle minimal
+    # (même ``QAction``, pour ne pas dupliquer le raccourci).
     new = _action(parent, "&Nouveau", shortcut="Ctrl+N")
+    new_templates = TemplateActions(by_id={"minimal": new})
+    for template in TEMPLATES:
+        if template.template_id == "minimal":
+            continue
+        new_templates.by_id[template.template_id] = _action(parent, template.label)
     open_ = _action(parent, "&Ouvrir...", shortcut="Ctrl+O")
     save = _action(parent, "&Enregistrer", shortcut="Ctrl+S")
     save_as = _action(parent, "Enregistrer &sous...", shortcut="Ctrl+Shift+S")
@@ -149,11 +174,13 @@ def build_actions(parent: QWidget, *, profile_ids_and_labels: list[tuple[str, st
         profile_action.setActionGroup(profile_group)
         profile_actions.by_id[profile_id] = profile_action
 
+    header_wizard = _action(parent, "&Assistant d'en-tête...")
     preferences = _action(parent, "&Préférences...")
     about = _action(parent, "À &propos de TIGRE")
 
     return Actions(
         new=new,
+        new_templates=new_templates,
         open=open_,
         recent_menu_placeholder=_action(parent, "(fichiers récents)"),
         save=save,
@@ -176,6 +203,7 @@ def build_actions(parent: QWidget, *, profile_ids_and_labels: list[tuple[str, st
         themes=theme_actions,
         validate=validate,
         profiles=profile_actions,
+        header_wizard=header_wizard,
         preferences=preferences,
         about=about,
     )

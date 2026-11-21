@@ -24,6 +24,9 @@ def build_menu_bar(menu_bar: QMenuBar, actions: Actions) -> Menus:
 
     file_menu = menu_bar.addMenu("&Fichier")
     file_menu.addAction(actions.new)
+    new_from_template_menu = file_menu.addMenu("Nouveau depuis un &modèle")
+    for template_id, template_action in actions.new_templates.by_id.items():
+        new_from_template_menu.addAction(template_action)
     file_menu.addAction(actions.open)
     recent_files_menu = file_menu.addMenu("Fichiers &récents")
     recent_files_menu.setEnabled(False)
@@ -77,6 +80,8 @@ def build_menu_bar(menu_bar: QMenuBar, actions: Actions) -> Menus:
     profile_menu = tools_menu.addMenu("Pro&fil actif")
     for profile_action in actions.profiles.by_id.values():
         profile_menu.addAction(profile_action)
+    tools_menu.addSeparator()
+    tools_menu.addAction(actions.header_wizard)
     tools_menu.addSeparator()
     tools_menu.addAction(actions.preferences)
 
