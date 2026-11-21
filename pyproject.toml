@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tei-editor"
+version = "0.1.0"
+description = "Éditeur graphique de bureau pour XML-TEI P5"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+dependencies = [
+    "PySide6>=6.6",
+    "lxml>=5.0",
+]
+
+[project.optional-dependencies]
+spellcheck = ["pyspellchecker>=0.8"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+tei-editor = "tei_editor.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
