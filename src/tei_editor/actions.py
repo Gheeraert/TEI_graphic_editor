@@ -1,0 +1,161 @@
+"""``QAction`` centralisées (``docs/ROADMAP.md`` §5 : « QAction
+centralisées dans un module dédié, pas éparpillées dans ``MainWindow`` »).
+
+Ce module ne fait que construire les actions (texte, raccourci,
+« cochable », groupes exclusifs) ; leur branchement (``triggered.connect``)
+est fait par ``main_window.py``. Les menus « Insertion » et « Balises »
+n'ont volontairement qu'une action désactivée : ce sont les menus de la
+palette de balises, qui n'existe pas avant les phases 5/7.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
+from PySide6.QtGui import QAction, QActionGroup, QKeySequence
+from PySide6.QtWidgets import QWidget
+
+from tei_editor.prefs.settings import THEME_CHOICES
+
+
+def _action(parent: QWidget, text: str, *, shortcut: str | None = None, checkable: bool = False) -> QAction:
+    action = QAction(text, parent)
+    if shortcut:
+        action.setShortcut(QKeySequence(shortcut))
+    action.setCheckable(checkable)
+    return action
+
+
+@dataclass
+class ViewDockActions:
+    outline: QAction
+    inspector: QAction
+    problems: QAction
+
+
+@dataclass
+class ThemeActions:
+    group: QActionGroup
+    by_name: dict[str, QAction] = field(default_factory=dict)
+
+
+@dataclass
+class ProfileActions:
+    group: QActionGroup
+    by_id: dict[str, QAction] = field(default_factory=dict)
+
+
+@dataclass
+class Actions:
+    # Fichier
+    new: QAction
+    open: QAction
+    recent_menu_placeholder: QAction  # remplacé dynamiquement par menus.py
+    save: QAction
+    save_as: QAction
+    export: QAction
+    quit: QAction
+    # Édition
+    undo: QAction
+    redo: QAction
+    cut: QAction
+    copy: QAction
+    paste: QAction
+    find_replace: QAction
+    goto_line: QAction
+    # Insertion / Balises (coquilles, phases 5/7)
+    insertion_unavailable: QAction
+    tags_unavailable: QAction
+    # Affichage
+    docks: ViewDockActions
+    zoom_in: QAction
+    zoom_out: QAction
+    zoom_reset: QAction
+    themes: ThemeActions
+    # Outils
+    validate: QAction
+    profiles: ProfileActions
+    preferences: QAction
+    # Aide
+    about: QAction
+
+
+def build_actions(parent: QWidget, *, profile_ids_and_labels: list[tuple[str, str]]) -> Actions:
+    new = _action(parent, "&Nouveau", shortcut="Ctrl+N")
+    open_ = _action(parent, "&Ouvrir...", shortcut="Ctrl+O")
+    save = _action(parent, "&Enregistrer", shortcut="Ctrl+S")
+    save_as = _action(parent, "Enregistrer &sous...", shortcut="Ctrl+Shift+S")
+    export = _action(parent, "&Exporter une copie...")
+    quit_ = _action(parent, "&Quitter", shortcut="Ctrl+Q")
+
+    undo = _action(parent, "&Annuler", shortcut="Ctrl+Z")
+    redo = _action(parent, "&Rétablir", shortcut="Ctrl+Shift+Z")
+    cut = _action(parent, "Co&uper", shortcut="Ctrl+X")
+    copy = _action(parent, "&Copier", shortcut="Ctrl+C")
+    paste = _action(parent, "C&oller", shortcut="Ctrl+V")
+    find_replace = _action(parent, "&Rechercher/remplacer...", shortcut="Ctrl+F")
+    goto_line = _action(parent, "Aller à la li&gne...", shortcut="Ctrl+G")
+
+    insertion_unavailable = _action(parent, "Palette de balises (disponible en phase 5)")
+    insertion_unavailable.setEnabled(False)
+    tags_unavailable = _action(parent, "Jeux de balises (disponible en phase 7)")
+    tags_unavailable.setEnabled(False)
+
+    outline = _action(parent, "&Plan", checkable=True)
+    inspector = _action(parent, "&Inspecteur", checkable=True)
+    problems = _action(parent, "Pro&blèmes", checkable=True)
+    docks = ViewDockActions(outline=outline, inspector=inspector, problems=problems)
+
+    zoom_in = _action(parent, "Zoom &avant", shortcut="Ctrl++")
+    zoom_out = _action(parent, "Zoom a&rrière", shortcut="Ctrl+-")
+    zoom_reset = _action(parent, "Zoom &réinitialiser", shortcut="Ctrl+0")
+
+    theme_group = QActionGroup(parent)
+    theme_group.setExclusive(True)
+    theme_actions = ThemeActions(group=theme_group)
+    theme_labels = {"clair": "Thème &clair", "sombre": "Thème &sombre"}
+    for theme_id in THEME_CHOICES:
+        theme_action = _action(parent, theme_labels.get(theme_id, theme_id), checkable=True)
+        theme_action.setActionGroup(theme_group)
+        theme_actions.by_name[theme_id] = theme_action
+
+    validate = _action(parent, "&Valider", shortcut="F7")
+
+    profile_group = QActionGroup(parent)
+    profile_group.setExclusive(True)
+    profile_actions = ProfileActions(group=profile_group)
+    for profile_id, label in profile_ids_and_labels:
+        profile_action = _action(parent, label, checkable=True)
+        profile_action.setActionGroup(profile_group)
+        profile_actions.by_id[profile_id] = profile_action
+
+    preferences = _action(parent, "&Préférences...")
+    about = _action(parent, "À &propos de TIGRE")
+
+    return Actions(
+        new=new,
+        open=open_,
+        recent_menu_placeholder=_action(parent, "(fichiers récents)"),
+        save=save,
+        save_as=save_as,
+        export=export,
+        quit=quit_,
+        undo=undo,
+        redo=redo,
+        cut=cut,
+        copy=copy,
+        paste=paste,
+        find_replace=find_replace,
+        goto_line=goto_line,
+        insertion_unavailable=insertion_unavailable,
+        tags_unavailable=tags_unavailable,
+        docks=docks,
+        zoom_in=zoom_in,
+        zoom_out=zoom_out,
+        zoom_reset=zoom_reset,
+        themes=theme_actions,
+        validate=validate,
+        profiles=profile_actions,
+        preferences=preferences,
+        about=about,
+    )
