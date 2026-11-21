@@ -135,3 +135,54 @@
 7. **Correspondance action -> nom logique aplatie une seule fois (`tei_editor.ui.action_registry.flatten_actions`)**, réutilisée à la fois par `tei_editor.ui.icons.apply_action_icons` et par `tei_editor.ui.tooltips.apply_tooltips_with_shortcuts` : une seule liste de correspondance entre l'arborescence de `Actions` (dataclasses imbriquées) et les clefs de `action_icons.json`, jamais deux listes parallèles qui pourraient diverger.
 
 **Conséquences.** Le thème (couleurs + icônes) reste un point d'entrée unique (`MainWindow._apply_theme`), appelé à l'initialisation et à chaque changement de thème, qui pose la feuille de style *et* recolore toutes les icônes d'action en une seule fois. Les captures d'écran avant/après (`docs/screenshots/phase8_avant.png`, `phase8_apres.png`) illustrent ce critère d'acceptation explicite de la roadmap.
+
+## ADR-0011 — Phase 9 : numéro de version 1.0.0, pas d'exécutable multiplateforme, lacune de `package-data` corrigée
+
+**Statut.** Adopté (phase 9).
+
+**Contexte.** `docs/ROADMAP.md` §5 (phase 9) demande un numéro de version et un journal des
+changements, en notant que les 9 phases couvrent désormais l'intégralité du plan initial. Le projet
+était resté en `0.1.0` (version posée à la phase 0, jamais retouchée depuis) à la fois dans
+`pyproject.toml` et `src/tei_editor/__init__.py`. Un exécutable autonome est demandé «
+éventuellement » par la même section, et l'installation « simple » (`pipx`/`pip`) devait être vérifiée
+réellement, pas seulement relue.
+
+**Décisions.**
+
+1. **Version `1.0.0`, pas `0.9.0`/`0.10.0`.** Un `0.x` signale conventionnellement (SemVer) un projet
+   encore instable dont l'API/le comportement peuvent changer sans préavis à chaque mineure. Ce
+   n'est plus la situation de TIGRE à l'issue de cette phase : les 9 phases du plan initial
+   (`docs/ROADMAP.md` §5, phases 0 à 9) sont toutes implémentées et chacune a son critère
+   d'acceptation vérifié (round-trip octet à octet, validation RelaxNG, jeux de balises de bout en
+   bout, finition visuelle, et maintenant couverture ciblée + installation réelle) — c'est
+   raisonnablement la définition même d'une version « 1.0 » pour un projet dont le plan initial est
+   un ensemble fini de phases plutôt qu'un flux continu de fonctionnalités. `0.10.0` aurait suggéré
+   un simple incrément parmi d'autres plutôt qu'un jalon ; `1.0.0` marque explicitement que le plan
+   initial est tenu en entier. Les versions ultérieures (corrections, extensions au-delà du plan
+   initial — ex. la `listWit` structurée notée comme piste par ADR-0009 point 6) suivront SemVer
+   normalement à partir de ce point (`1.0.x` pour un correctif, `1.x.0` pour une extension
+   compatible).
+2. **Pas d'exécutable autonome construit dans cette phase, documenté comme limitation plutôt que
+   bâclé.** La roadmap ne le demande qu'« éventuellement » (pas un critère d'acceptation). Un script
+   PyInstaller ne fait pas de compilation croisée : exécuté sur cette machine (Windows), il ne peut
+   produire qu'un exécutable Windows, jamais macOS/Linux simultanément. Plutôt que prétendre à un
+   résultat multiplateforme non vérifiable depuis cette session, `docs/INSTALLATION.md` documente
+   cette limite explicitement et donne la commande PyInstaller (non exécutée, non vérifiée) pour qui
+   voudrait la tenter sur chaque plateforme cible.
+3. **Lacune réelle découverte par la vérification effective de l'installation : `package-data`
+   manquant.** Le critère « installation vérifiée dans un venv propre, pas de suppositions non
+   testées » a été pris au sérieux : un `pip install .` réel dans un venv neuf, puis un lancement
+   réel de `tei-editor` (`QT_QPA_PLATFORM=offscreen`), a révélé que `pyproject.toml` n'embarquait que
+   les fichiers `.py` — `src/tei_editor/data/` (catalogue, profils, schémas RelaxNG, icônes, paires
+   `choice`) en était absent, et l'application plantait au démarrage (`FileNotFoundError` sur
+   `action_icons.json`). `pytest` ne l'avait jamais détecté : les tests tournent depuis le dépôt, pas
+   depuis un paquet installé. Corrigé par `[tool.setuptools.package-data] tei_editor =
+   ["data/**/*"]`, revérifié par une réinstallation complète dans le même venv (lancement réussi,
+   fermeture propre), et gardé par un nouveau test (`tests/test_packaging.py`) qui n'a pas besoin de
+   reconstruire un paquet pour détecter la régression.
+
+**Conséquences.** Le numéro de version reflète maintenant l'achèvement du plan initial plutôt qu'un
+compteur resté figé depuis la phase 0. L'absence d'exécutable autonome est une limitation assumée et
+documentée, pas un oubli silencieux. La correction de `package-data` est le seul changement de
+comportement de cette phase qui touche à autre chose que la documentation/les tests — nécessaire
+pour que le critère d'acceptation « installation vérifiée » de cette même phase soit satisfait.

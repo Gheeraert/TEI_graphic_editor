@@ -32,6 +32,25 @@ def test_manifest_references_existing_files() -> None:
         assert (FIXTURES_DIR / entry["file"]).is_file(), entry["file"]
 
 
+def test_every_xml_file_on_disk_has_a_manifest_entry() -> None:
+    """Garde-fou dans l'autre sens que :func:`test_manifest_references_existing_files` :
+    toutes les suites qui exploitent ce corpus le parcourent *via*
+    `manifest.json` (jamais par un listage direct du dossier) — voir
+    `docs/NON_REGRESSION.md`. Un fichier `.xml` déposé dans
+    `tests/fixtures/tei-samples/` sans entrée de manifeste correspondante
+    ne serait donc testé par **rien**, en silence : ce test transforme cet
+    oubli en échec explicite plutôt que de laisser un nouveau document
+    traverser toute la suite sans jamais être vérifié."""
+    manifest = _load_manifest()
+    declared = {(FIXTURES_DIR / entry["file"]).resolve() for entry in manifest["files"]}
+    on_disk = {path.resolve() for path in FIXTURES_DIR.rglob("*.xml")}
+    orphans = on_disk - declared
+    assert not orphans, (
+        "fichier(s) XML du corpus sans entrée dans manifest.json : "
+        f"{sorted(str(p.relative_to(FIXTURES_DIR)) for p in orphans)}"
+    )
+
+
 @pytest.mark.parametrize(
     "entry",
     [entry for entry in _load_manifest()["files"] if not entry.get("expect")],
