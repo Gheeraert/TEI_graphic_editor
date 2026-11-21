@@ -29,3 +29,17 @@
 3. **Attributs résolus par héritage de classes.** Plutôt que de s'en tenir aux seuls attributs déclarés directement sur chaque `elementSpec` (minimum pragmatique jugé acceptable par la roadmap), le script résout aussi les attributs hérités des classes d'attributs (`att.*`) dont l'élément est membre, transitivement (p. ex. `att.divLike` → `att.global` pour `@xml:id`/`@xml:lang`). Chaque attribut résolu porte un champ `source` (`"own"` ou l'identifiant de la classe d'origine). Limite assumée : les `<constraintSpec>` (contraintes Schematron conditionnant la présence/valeur d'un attribut selon le contexte) ne sont pas interprétées ; un attribut listé comme possible n'est donc pas garanti pertinent dans tous les contextes d'usage de l'élément.
 
 **Conséquences.** Le catalogue reste reproductible (cache local, numéro de version explicite) et documente ses propres limites dans son champ `notes`. L'interface (palette de balises, phase 7) pourra s'appuyer sur `children_approx`/`parents_approx`/`attributes` pour suggérer, mais toute vérification de validité devra passer par le schéma RelaxNG du profil actif (phase 4), jamais par ces champs.
+
+## ADR-0004 — Trois décisions prises pendant l'extraction (phase 2)
+
+**Statut.** Adopté (phase 2).
+
+**Contexte.** `docs/AUDIT_MEROPE.md` documente l'audit complet. Trois points, non prévus dans le détail par `docs/ROADMAP.md` §4, ont demandé un choix pendant l'extraction effective.
+
+**Décisions.**
+
+1. **`xml_safety.parse_xml_safely` ne supprime plus commentaires/PI.** La version Mérope (`remove_comments=True, remove_pis=True`) part du principe que ces nœuds sont toujours absents en pratique (TEI produit par Pandoc) et visait surtout à égaler le comportement de `xml.etree.ElementTree`. Ici, conformément à ADR-0001 (fidélité du contenu mixte, round-trip sans perte), ces nœuds sont conservés par défaut. La fonction `parse_xml_safely_for_elementtree` (qui existait pour satisfaire ce besoin de compatibilité ET/lxml côté Mérope) n'est pas reprise : cet éditeur reste sur lxml partout.
+2. **`tei/commons_publishing.py` résout `_SCHEMA_PATH` vers `tei_editor/data/schemas/commons-publishing/`** (au lieu de `bloggen/resources/schemas/...`), même convention (chemin relatif au fichier, pas au répertoire de travail courant). Le schéma RNG, sa `LICENSE.txt` et sa `PROVENANCE.json` sont copiés tels quels (fichiers tiers, provenance et licence propres conservées, distinctes de la provenance du code Mérope).
+3. **`typography.py` est placé sous `tei/typography.py`**, pas sous un éventuel futur paquet `markdown/` (qui n'existe pas dans ce projet, TEI n'étant pas du Markdown) : ces transformations de texte pur (guillemets, espaces insécables, ligature œ) sont génériques mais leur seul point d'application prévu est le contenu textuel d'un document TEI (ADR-0001, §4 de `docs/ROADMAP.md`). Seules les fonctions de texte pur sont reprises ; `split_century_ordinals`/`_split_run_by_century` (couplées au pivot `InlineRun` de Mérope) sont laissées de côté — voir `docs/AUDIT_MEROPE.md`.
+
+**Conséquences.** Aucune de ces décisions ne change l'architecture adoptée en ADR-0001/0002. Elles sont consignées ici plutôt que tranchées silencieusement, conformément à `CLAUDE.md`.
