@@ -59,6 +59,15 @@ class SnippetActions:
 
 
 @dataclass
+class WysiwygActions:
+    """Bascule du mode WYSIWYG (phase 10, ADR-0009) : masque les balises
+    XML pour le contenu de ``<body>``, dans le périmètre du premier jalon
+    (voir ``tei_editor.wysiwyg``)."""
+
+    toggle: QAction
+
+
+@dataclass
 class ThemeActions:
     group: QActionGroup
     by_name: dict[str, QAction] = field(default_factory=dict)
@@ -108,6 +117,7 @@ class Actions:
     snippets: SnippetActions
     # Affichage
     docks: ViewDockActions
+    wysiwyg: WysiwygActions
     zoom_in: QAction
     zoom_out: QAction
     zoom_reset: QAction
@@ -171,6 +181,10 @@ def build_actions(parent: QWidget, *, profile_ids_and_labels: list[tuple[str, st
     palette = _action(parent, "&Palette", checkable=True)
     docks = ViewDockActions(outline=outline, inspector=inspector, problems=problems, palette=palette)
 
+    wysiwyg = WysiwygActions(
+        toggle=_action(parent, "Mode &WYSIWYG (masquer les balises)", checkable=True)
+    )
+
     zoom_in = _action(parent, "Zoom &avant", shortcut="Ctrl++")
     zoom_out = _action(parent, "Zoom a&rrière", shortcut="Ctrl+-")
     zoom_reset = _action(parent, "Zoom &réinitialiser", shortcut="Ctrl+0")
@@ -218,6 +232,7 @@ def build_actions(parent: QWidget, *, profile_ids_and_labels: list[tuple[str, st
         tags=tags,
         snippets=snippets,
         docks=docks,
+        wysiwyg=wysiwyg,
         zoom_in=zoom_in,
         zoom_out=zoom_out,
         zoom_reset=zoom_reset,

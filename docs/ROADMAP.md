@@ -101,6 +101,13 @@ Chaque phase est livrée avec tests, doc à jour et commit(s) atomiques. Ne pas 
 
 **Phase 9 — Qualité et distribution.** Couverture des opérations d'édition par des tests hors écran, corpus de TEI réels (des projets de l'utilisateur) en tests de non-régression, documentation utilisateur, installation simple (`pipx`/`pip`, éventuellement un exécutable), numéro de version et journal des changements.
 
+**Phase 10 — Mode WYSIWYG (amende ADR-0001, voir ADR-0012).** Pivot `Block`/`InlineRun` propre à ce projet, qui masque les balises XML du contenu de `<body>` et affiche du texte mis en forme, à la demande explicite de l'utilisateur après usage de l'éditeur texte des phases 0-9. Sans échappatoire : tout élément non modélisé est désenveloppé (texte conservé, balise/attributs perdus) — risque accepté et documenté, pas une garantie de fidélité comme le reste de l'application.
+- **Jalon 1 (réalisé) — profil « Édition de textes », sous-ensemble restreint.** Blocs : `div` (profondeur), `head` (niveau = profondeur de `div`), `p`, `l`/`lg` (vers), `item`/`list`, `note`. Runs inline : `hi`/`emph`/`foreign`/`title` (italique), `persName`/`placeName`/`orgName`/`name`/`date` (souligné/couleur). Bascule Texte XML ↔ WYSIWYG dans le menu Affichage ; seule la plage `<body>...</body>` du texte est réécrite à la bascule/sauvegarde (`teiHeader`/`front`/`back` intacts). *Critère vérifié : round-trip correct sur les fixtures `03-prose/`/`04-poesie/` déjà dans ce périmètre ; un élément hors périmètre (`choice`, apparat critique...) perd sa balise après un aller-retour, testé explicitement.*
+- **Jalon 2 (à planifier) — théâtre et apparat critique.** Nouveaux types de blocs `sp`/`speaker`/`stage`, `app`/`lem`/`rdg`.
+- **Jalon 3 (à planifier) — `choice` interactif**, au lieu d'être simplifié (pastille cliquable dans le texte WYSIWYG, bascule `sic`/`corr` etc. sans quitter le mode).
+- **Jalon 4 (à planifier) — édition des attributs en WYSIWYG**, réutilisant `editor.attribute_editors.make_editor_for_attribute` dans un dialogue contextuel plutôt que de forcer un retour au mode texte.
+- **Jalon 5 (à planifier) — `front`/`back`**, pas seulement `body`.
+
 ## 6. Règles de travail pour Claude Code (section à copier dans `CLAUDE.md`)
 
 - Python ≥ 3.11, PySide6, lxml. Aucune dépendance supplémentaire sans validation.

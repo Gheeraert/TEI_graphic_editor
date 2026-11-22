@@ -2,7 +2,10 @@
 
 ## ADR-0001 — Texte XML assisté, pas de pivot objet, pas de WYSIWYG
 
-**Statut.** Adopté (phase 0), à reconfirmer avant la phase 3 (voir `docs/ROADMAP.md` §7).
+**Statut.** Adopté (phase 0). **Amendé par ADR-0012** (phase 10) : reste la règle pour le mode
+texte (toujours la source de vérité par défaut, round-trip garanti), mais n'est plus la seule
+architecture de l'application — un mode WYSIWYG avec pivot `Block`/`InlineRun`, limité au contenu
+de `<body>`, coexiste désormais à côté, au prix d'une perte de fidélité assumée dans ce mode.
 
 **Contexte.** Mérope encode son éditeur Qt autour d'un pivot `Block`/`InlineRun` pensé pour du Markdown à structure plate. TEI est un arbre XML à contenu mixte, attributs et imbrication libre : ce pivot ne se transpose pas sans perte (contenu mixte, commentaires, PI, espaces significatifs, ordre des attributs).
 
@@ -186,3 +189,65 @@ compteur resté figé depuis la phase 0. L'absence d'exécutable autonome est un
 documentée, pas un oubli silencieux. La correction de `package-data` est le seul changement de
 comportement de cette phase qui touche à autre chose que la documentation/les tests — nécessaire
 pour que le critère d'acceptation « installation vérifiée » de cette même phase soit satisfait.
+
+## ADR-0012 — Phase 10 : mode WYSIWYG, amendement d'ADR-0001, politique de simplification sans échappatoire
+
+**Statut.** Adopté (phase 10, premier jalon).
+
+**Contexte.** Après avoir utilisé l'éditeur issu des phases 0 à 9 (texte XML assisté, conforme à
+ADR-0001), l'utilisateur a demandé un véritable éditeur WYSIWYG — masquant complètement les balises
+XML, comme l'éditeur Qt de Mérope (`document_adapter.py`/`text_edit.py`/`window.py`, pivot
+`Block`/`InlineRun`, explicitement écartés par ADR-0001 et par `docs/AUDIT_MEROPE.md` §« gros
+modules confirmés hors périmètre »). Consulté explicitement (conversation du 2026-11-21), il a
+confirmé, dans l'ordre : (1) un WYSIWYG strict, pas la variante « pastilles » qu'ADR-0001 envisageait
+comme évolution future ; (2) **sans échappatoire** — pas de zone XML brute de secours pour les
+structures que le modèle ne sait pas représenter ; (3) l'acceptation du risque de perte/altération
+qui en découle sur les structures TEI non modélisées, et l'assouplissement explicite, pour ce mode
+seulement, de la règle « fidélité du XML avant tout » de `CLAUDE.md`.
+
+**Décisions.**
+
+1. **ADR-0001 amendé, pas abrogé.** Le mode texte (`XmlTextEditor`, `QPlainTextEdit`) reste
+   inchangé : texte XML source de vérité, round-trip octet à octet garanti, aucune des opérations
+   structurées des phases 5/6/7 n'est affectée. Le mode WYSIWYG est un second mode, à bascule
+   explicite (menu Affichage, action cochable), pas un remplacement.
+2. **Portée du premier jalon : le contenu de `<body>` uniquement, sous-ensemble du profil « Édition
+   de textes ».** `teiHeader`, `front`/`back`, le théâtre (`sp`/`speaker`/`stage`) et l'apparat
+   critique (`app`/`lem`/`rdg`) restent hors de portée — voir le plan d'implémentation pour le détail
+   des correspondances retenues (`src/tei_editor/wysiwyg/model.py` : `BLOCK_TAGS`, `CONTAINER_TAGS`,
+   `INLINE_TAGS`). Toute extension de ce périmètre (théâtre, apparat critique, édition d'attributs en
+   WYSIWYG, `choice` interactif) est un travail futur distinct, pas implicitement couvert ici.
+3. **Politique de simplification, sans échappatoire, documentée plutôt que cachée.** Un élément
+   rencontré dans `<body>` qui n'est dans aucune des tables ci-dessus est désenveloppé : son texte
+   est conservé comme texte brut, sa balise et ses attributs sont supprimés — à l'ouverture en mode
+   WYSIWYG comme à la resérialisation. Aucun blocage, aucun message d'avertissement par élément
+   perdu dans ce premier jalon (un simple refus de bascule existe seulement si le document entier est
+   mal formé ou n'a pas de `<body>` — ce n'est pas une perte silencieuse puisqu'il n'y a alors rien à
+   convertir). Vérifié par test (`tests/test_wysiwyg_xml_adapter.py`) : un document avec
+   `choice`/`sic`/`corr` perd bien ces balises après un aller-retour par le mode WYSIWYG.
+4. **Pivot `Block`/`InlineRun` propre à ce projet, pas porté de Mérope.** `Block.kind` et
+   `InlineRun.style` sont littéralement le nom de la balise TEI représentée (pas un vocabulaire
+   Markdown traduit) : ça évite une table de correspondance inverse séparée à la resérialisation.
+   Seul `@xml:lang` de `<foreign>` est conservé parmi tous les attributs possibles (choix arbitraire
+   mais documenté, pas une liste exhaustive d'exceptions).
+5. **Le XML n'est réécrit qu'à l'intérieur de `<body>`, jamais le document entier.**
+   `wysiwyg.xml_adapter.replace_body_in_document` ne remplace que la plage de texte entre les
+   balises `<body>`/`</body>` (repérée via `editor.current_element.element_spans`, déjà utilisé par
+   les opérations structurées de phase 5) : `teiHeader`, le prologue XML et tout contenu de
+   `front`/`back` restent byte-identiques après un aller-retour en mode WYSIWYG, même si la
+   fidélité à l'intérieur de `<body>` n'est plus garantie. C'est une sérialisation complète du
+   corps, pas une plage chirurgicale comme le reste de l'éditeur (ADR-0008) : assumé comme la
+   conséquence directe du choix « pivot de blocs = source de vérité pendant l'édition WYSIWYG »,
+   pas une régression accidentelle de la discipline habituelle.
+6. **Modification explicite de `CLAUDE.md`** : la règle « Fidélité du XML avant tout » reçoit une
+   exception nommée, renvoyant ici, plutôt que d'être réinterprétée en silence pour tout le projet.
+
+**Conséquences.** Deux philosophies coexistent délibérément dans la même application : le mode
+texte reste la référence pour tout usage où le round-trip sans perte importe (sources critiques,
+documents déjà enrichis avec des structures hors périmètre WYSIWYG), le mode WYSIWYG convient aux
+textes qui restent dans son sous-ensemble modélisé (prose/vers simples) ou aux phases de rédaction
+où la perte des structures non modélisées est acceptée en connaissance de cause. Un document ouvert
+puis resauvegardé après un passage par le mode WYSIWYG n'est **plus** garanti identique à
+l'original pour tout ce que `<body>` contenait hors du périmètre modélisé — contrairement à tout le
+reste de l'application. Les jalons futurs (théâtre, apparat critique, `choice` interactif, édition
+d'attributs en WYSIWYG) devront chacun reconsidérer s'ils réduisent ce risque ou l'étendent encore.

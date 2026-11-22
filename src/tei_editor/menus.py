@@ -74,6 +74,8 @@ def build_menu_bar(menu_bar: QMenuBar, actions: Actions) -> Menus:
     view_menu.addAction(actions.docks.problems)
     view_menu.addAction(actions.docks.palette)
     view_menu.addSeparator()
+    view_menu.addAction(actions.wysiwyg.toggle)
+    view_menu.addSeparator()
     zoom_menu = view_menu.addMenu("&Zoom")
     zoom_menu.addAction(actions.zoom_in)
     zoom_menu.addAction(actions.zoom_out)

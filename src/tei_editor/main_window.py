@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
     QInputDialog,
     QMainWindow,
     QMessageBox,
+    QStackedWidget,
 )
 
 from tei_editor import recovery
@@ -47,6 +48,13 @@ from tei_editor.ui.icons import apply_action_icons
 from tei_editor.ui.theme import foreground_color, stylesheet_for
 from tei_editor.ui.toolbars import Toolbars, build_toolbars
 from tei_editor.ui.tooltips import apply_tooltips_with_shortcuts
+from tei_editor.wysiwyg.editor_widget import WysiwygEditor
+from tei_editor.wysiwyg.xml_adapter import (
+    blocks_to_xml,
+    find_body_element,
+    replace_body_in_document,
+    xml_to_blocks,
+)
 
 APP_TITLE = "TIGRE — Éditeur graphique de TEI"
 STRUCTURAL_UPDATE_DEBOUNCE_MS = 400
@@ -62,7 +70,11 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
         self.recovery_dir = Path(recovery_dir) if recovery_dir is not None else recovery.default_recovery_directory()
 
         self.editor = XmlTextEditor(self)
-        self.setCentralWidget(self.editor)
+        self.wysiwyg_editor = WysiwygEditor(self)
+        self._view_stack = QStackedWidget(self)
+        self._view_stack.addWidget(self.editor)
+        self._view_stack.addWidget(self.wysiwyg_editor)
+        self.setCentralWidget(self._view_stack)
 
         self.status_bar = EditorStatusBar(self)
         self.setStatusBar(self.status_bar)
@@ -190,6 +202,8 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
         actions.snippets.mark_shared_verse.triggered.connect(self._mark_shared_verse)
         actions.snippets.insert_apparatus.triggered.connect(self._insert_apparatus)
 
+        actions.wysiwyg.toggle.toggled.connect(self._on_wysiwyg_toggled)
+
         actions.zoom_in.triggered.connect(self.editor.zoom_editor_in)
         actions.zoom_out.triggered.connect(self.editor.zoom_editor_out)
         actions.zoom_reset.triggered.connect(self.editor.zoom_editor_reset)
@@ -207,7 +221,7 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
 
     # -- Nouveau / ouverture / enregistrement --------------------------------
     def _confirm_discard_changes(self) -> bool:
-        if not self.editor.document().isModified():
+        if not self.editor.document().isModified() and not self.wysiwyg_editor.document().isModified():
             return True
         reply = QMessageBox.question(
             self,
@@ -221,6 +235,7 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
     def _new_document_from_template(self, template_id: str) -> None:
         if not self._confirm_discard_changes():
             return
+        self.actions.wysiwyg.toggle.setChecked(False)
         self.editor.new_from_template(template_text(template_id))
         self.setWindowTitle(APP_TITLE)
         self._update_structural_info()
@@ -239,6 +254,7 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
             self._open_path(Path(path_str))
 
     def _open_path(self, path: Path) -> None:
+        self.actions.wysiwyg.toggle.setChecked(False)
         try:
             self.editor.load_file(path)
         except OSError as exc:
@@ -257,12 +273,14 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
         self._open_path(Path(path_str))
 
     def _save_file(self) -> None:
+        self._commit_wysiwyg_to_editor()
         if self.editor.current_path is None:
             self._save_file_as()
             return
         self._save_to_path(self.editor.current_path)
 
     def _save_file_as(self) -> None:
+        self._commit_wysiwyg_to_editor()
         start_dir = str(self.editor.current_path) if self.editor.current_path else ""
         path_str, _ = QFileDialog.getSaveFileName(
             self,
@@ -286,6 +304,7 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
         self.statusBar().showMessage(f"Enregistré : {path}", 4000)
 
     def _export_copy(self) -> None:
+        self._commit_wysiwyg_to_editor()
         start_dir = str(self.editor.current_path) if self.editor.current_path else ""
         path_str, _ = QFileDialog.getSaveFileName(
             self,
@@ -335,6 +354,62 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
 
     def _goto_problem_position(self, line: int, column: int) -> None:
         self._goto_line_column(line, column)
+
+    # -- Mode WYSIWYG (phase 10, ADR-0009) -------------------------------------
+    def _on_wysiwyg_toggled(self, checked: bool) -> None:
+        if checked:
+            self._switch_to_wysiwyg()
+        else:
+            self._switch_to_text()
+
+    def _switch_to_wysiwyg(self) -> None:
+        text = self.editor.toPlainText()
+        try:
+            root = parse_xml_safely(text)
+        except UnsafeXmlError as exc:
+            QMessageBox.critical(
+                self, "Mode WYSIWYG", f"Document mal formé, bascule impossible :\n{exc}"
+            )
+            self.actions.wysiwyg.toggle.setChecked(False)
+            return
+        body = find_body_element(root)
+        if body is None:
+            QMessageBox.critical(
+                self, "Mode WYSIWYG", "Aucun élément <body> dans ce document : bascule impossible."
+            )
+            self.actions.wysiwyg.toggle.setChecked(False)
+            return
+        self.wysiwyg_editor.load_blocks(xml_to_blocks(body))
+        self._view_stack.setCurrentWidget(self.wysiwyg_editor)
+
+    def _switch_to_text(self) -> None:
+        self._commit_wysiwyg_to_editor()
+        self._view_stack.setCurrentWidget(self.editor)
+
+    def _commit_wysiwyg_to_editor(self) -> None:
+        """Resérialise le modèle de blocs WYSIWYG dans le texte XML de
+        ``self.editor`` (ADR-0009 : le pivot de blocs est la source de
+        vérité pendant l'édition WYSIWYG, le texte XML la redevient à la
+        bascule/sauvegarde). Ne fait rien si le mode WYSIWYG n'est pas
+        actif : sans risque à appeler avant chaque enregistrement."""
+        if self._view_stack.currentWidget() is not self.wysiwyg_editor:
+            return
+        new_body_xml = blocks_to_xml(self.wysiwyg_editor.to_blocks())
+        current_text = self.editor.toPlainText()
+        try:
+            new_text = replace_body_in_document(current_text, new_body_xml)
+        except (UnsafeXmlError, ValueError) as exc:
+            QMessageBox.critical(
+                self, "Mode WYSIWYG", f"Impossible de resynchroniser le texte XML :\n{exc}"
+            )
+            return
+        if new_text == current_text:
+            return
+        cursor_position = self.editor.textCursor().position()
+        self.editor.setPlainText(new_text)
+        cursor = self.editor.textCursor()
+        cursor.setPosition(min(cursor_position, len(new_text)))
+        self.editor.setTextCursor(cursor)
 
     # -- Affichage : zoom/thème --------------------------------------------
     def _apply_theme(self, theme_id: str) -> None:
@@ -468,7 +543,11 @@ class MainWindow(SnippetCommandsMixin, TagCommandsMixin, QMainWindow):
             self._autosave_timer.stop()
 
     def _autosave_tick(self) -> None:
-        if not self.editor.document().isModified():
+        if self._view_stack.currentWidget() is self.wysiwyg_editor:
+            if not self.wysiwyg_editor.document().isModified():
+                return
+            self._commit_wysiwyg_to_editor()
+        elif not self.editor.document().isModified():
             return
         state = recovery.RecoveryState(
             file_path=str(self.editor.current_path) if self.editor.current_path else None,
